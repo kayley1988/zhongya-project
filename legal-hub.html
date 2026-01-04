@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法律板块 - 金哲工程机械</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-breadcrumb {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-breadcrumb a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-breadcrumb span {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            border-left: 5px solid #3498db;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            border-left-color: #e74c3c;
+        }
+
+        .card-icon {
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .card-desc {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .card-features {
+            margin-bottom: 15px;
+        }
+
+        .feature-item {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .feature-item::before {
+            content: '⚖';
+            position: absolute;
+            left: 0;
+            font-size: 14px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 5px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .warning-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            color: #2c3e50;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .back-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-breadcrumb">
+            <a href="./main.html">🏠 主页</a>
+            <span>›</span>
+            <span style="color: white; font-weight: bold;">⚖️ 法律板块</span>
+        </div>
+
+        <div class="header">
+            <h1>⚖️ 法律板块</h1>
+            <p>Legal Services Hub - 合规审查与风险管理</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">核心模块</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">合规准确率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">语言支持</div>
+            </div>
+        </div>
+
+        <div class="cards">
+            <a href="./contract-review.html" class="card">
+                <div class="card-icon">📝</div>
+                <div class="card-title">合同审核</div>
+                <div class="card-desc">合同模板管理、条款提取、风险提示、智能审查</div>
+                <div class="card-features">
+                    <div class="feature-item">多语种合同模板库管理</div>
+                    <div class="feature-item">AI智能条款风险识别</div>
+                    <div class="feature-item">关键条款自动提取与标注</div>
+                    <div class="feature-item">合规性自动检查与预警</div>
+                    <div class="feature-item">历史合同版本对比</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">风险评估</span>
+                    <span class="tag">条款库</span>
+                    <span class="tag">AI审查</span>
+                </div>
+                <div class="warning-badge">🔴 高优先级</div>
+            </a>
+
+            <a href="./evidence-review.html" class="card">
+                <div class="card-icon">🔐</div>
+                <div class="card-title">证据审核</div>
+                <div class="card-desc">验机报告、交易记录证据链管理、合规审计</div>
+                <div class="card-features">
+                    <div class="feature-item">完整证据链追溯与管理</div>
+                    <div class="feature-item">验机报告真实性验证</div>
+                    <div class="feature-item">交易记录时间戳保护</div>
+                    <div class="feature-item">合规审计报告自动生成</div>
+                    <div class="feature-item">电子签名与加密存储</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">证据链</span>
+                    <span class="tag">审计追踪</span>
+                    <span class="tag">区块链</span>
+                </div>
+            </a>
+
+            <a href="./text-compare.html" class="card">
+                <div class="card-icon">🔄</div>
+                <div class="card-title">多文本对比</div>
+                <div class="card-desc">中/英/俄多语言合同并列比对、差异标注、术语校验</div>
+                <div class="card-features">
+                    <div class="feature-item">多语言文本并列实时对比</div>
+                    <div class="feature-item">差异内容智能标注与高亮</div>
+                    <div class="feature-item">专业术语一致性校验</div>
+                    <div class="feature-item">翻译质量评估与建议</div>
+                    <div class="feature-item">版本变更历史记录</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">多语对比</span>
+                    <span class="tag">差异分析</span>
+                    <span class="tag">术语校验</span>
+                </div>
+            </a>
+        </div>
+
+        <a href="./main.html" class="back-btn">← 返回主页</a>
+    </div>
+</body>
+</html>

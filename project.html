@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目测算 - 中亚跨境项目管理</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="lib/chart.min.js"></script>
+    <style>
+        /* 项目头部样式 - 统一配色 */
+        .project-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .project-header .back-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .project-header .back-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .project-info {
+            flex: 1;
+        }
+        .project-info h2 {
+            margin: 0 0 4px 0;
+            font-size: 1.3em;
+        }
+        .project-meta {
+            font-size: 0.85em;
+            opacity: 0.9;
+            display: flex;
+            gap: 16px;
+        }
+        .project-actions-header {
+            display: flex;
+            gap: 10px;
+        }
+        .project-actions-header .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .project-actions-header .btn-save {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+        .project-actions-header .btn-save:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .project-actions-header .btn-version {
+            background: #4f46e5;
+            color: white;
+        }
+        .project-actions-header .btn-version:hover {
+            background: #4338ca;
+        }
+
+        /* 版本面板样式 */
+        .version-panel {
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .version-label {
+            font-weight: 600;
+            color: #333;
+        }
+        .version-select {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            min-width: 200px;
+        }
+        .version-info {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .version-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+        .version-actions button {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .version-actions button:hover {
+            background: #f5f5f5;
+        }
+
+        /* 保存版本弹窗 */
+        .version-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .version-modal.show {
+            display: flex;
+        }
+        .version-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 480px;
+            max-width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .version-modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .version-modal-header h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .version-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .version-modal-body {
+            padding: 24px;
+        }
+        .version-modal-body .form-group {
+            margin-bottom: 16px;
+        }
+        .version-modal-body label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #333;
+        }
+        .version-modal-body input,
+        .version-modal-body select,
+        .version-modal-body textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .version-modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .version-modal-footer button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .version-modal-footer .btn-cancel {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+        }
+        .version-modal-footer .btn-cancel:hover {
+            background: #ebebeb;
+        }
+        .version-modal-footer .btn-submit {
+            background: #4f46e5;
+            border: none;
+            color: white;
+        }
+        .version-modal-footer .btn-submit:hover {
+            background: #4338ca;
+        }
+        
+        /* Toast 样式 */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .toast {
+            padding: 12px 20px;
+            background: #333;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .toast.warning { background: #f59e0b; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 项目头部 -->
+        <div class="project-header">
+            <a href="list.html" class="back-link">
+                ← 返回列表
+            </a>
+            <div class="project-info">
+                <h2 id="projectTitle">加载中...</h2>
+                <div class="project-meta">
+                    <span id="projectId">ID: --</span>
+                    <span id="projectRegion">区域: --</span>
+                    <span id="projectStatus">状态: --</span>
+                    <span id="projectUpdateTime">更新: --</span>
+                </div>
+            </div>
+            <div class="project-actions-header">
+                <button class="btn btn-save" onclick="saveToProject()">
+                    💾 保存到项目
+                </button>
+                <button class="btn btn-version" onclick="openVersionModal()">
+                    📌 保存版本
+                </button>
+            </div>
+        </div>
+
+        <!-- 版本选择面板 -->
+        <div class="version-panel">
+            <span class="version-label">📋 当前版本：</span>
+            <select class="version-select" id="versionSelect" onchange="loadVersion(this.value)">
+                <option value="">-- 选择版本 --</option>
+            </select>
+            <span class="version-info" id="versionInfo">--</span>
+            <div class="version-actions">
+                <button onclick="compareVersions()">📊 版本对比</button>
+                <button onclick="exportVersion()">📥 导出</button>
+            </div>
+        </div>
+
+        <!-- 顶部控制条 -->
+        <header class="control-bar">
+            <div class="logo">
+                <h1>🚜 中哈跨境机械设备租售测算</h1>
+            </div>
+            <div class="controls">
+                <div class="control-group">
+                    <label>业务模式</label>
+                    <div class="toggle-buttons" id="modeToggle">
+                        <button class="toggle-btn active" data-value="lease">纯租赁</button>
+                        <button class="toggle-btn" data-value="lease-to-sell">租转售</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>付款方式</label>
+                    <div class="toggle-buttons" id="paymentToggle">
+                        <button class="toggle-btn active" data-value="full">全款</button>
+                        <button class="toggle-btn" data-value="financing">融资租赁</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>币种视图</label>
+                    <div class="toggle-buttons" id="currencyToggle">
+                        <button class="toggle-btn active" data-value="CNY">人民币</button>
+                        <button class="toggle-btn" data-value="KZT">坚戈</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>情景</label>
+                    <div class="toggle-buttons" id="scenarioToggle">
+                        <button class="toggle-btn" data-value="optimistic" title="租金+10%, 运费-15%, 汇率-8%, 税费-10%, 运营-15%">乐观</button>
+                        <button class="toggle-btn active" data-value="baseline" title="所有参数按输入值计算">基准</button>
+                        <button class="toggle-btn" data-value="conservative" title="租金-15%, 运费+25%, 汇率+15%, 税费+10%, 运营+20%">保守</button>
+                    </div>
+                </div>
+                <div class="control-group actions">
+                    <button class="action-btn" onclick="saveProject()">💾 保存</button>
+                    <button class="action-btn primary" onclick="exportPDFReport()">📄 导出报告</button>
+                </div>
+            </div>
+            <div class="status-bar">
+                <span class="scenario-tag" id="scenarioTag">基准情景</span>
+                <span class="update-time" id="updateTime">最近更新: --</span>
+                <span class="data-status" id="dataStatus">✅ 数据完整</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- 左侧输入区 -->
+            <aside class="input-panel">
+                <!-- B1 项目信息 -->
+                <section class="input-section" id="sectionB1">
+                    <div class="section-header" onclick="toggleSection('sectionB1')">
+                        <h3>📋 B1 项目信息</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label>设备类型 <span class="required">*</span></label>
+                            <select id="equipmentType">
+                                <option value="挖掘机">挖掘机</option>
+                                <option value="推土机">推土机</option>
+                                <option value="装载机">装载机</option>
+                                <option value="起重机">起重机</option>
+                                <option value="压路机">压路机</option>
+                                <option value="钻机">钻机</option>
+                                <option value="混凝土设备">混凝土设备</option>
+                                <option value="其他">其他设备</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>设备型号 <span class="hint">如：CAT320</span></label>
+                            <input type="text" id="equipmentModel" placeholder="请输入设备型号">
+                        </div>
+                        <div class="form-group">
+                            <label>台数 (N) <span class="required">*</span></label>
+                            <input type="number" id="quantity" value="1" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>租期 (月) <span class="required">*</span></label>
+                            <input type="number" id="leaseTerm" value="12" min="1" max="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label>目标区域 <span class="required">*</span></label>
+                            <select id="targetRegion" onchange="updateCityOptions()">
+                                <option value="哈萨克斯坦">🇰🇿 哈萨克斯坦</option>
+                                <option value="乌兹别克斯坦">🇺🇿 乌兹别克斯坦</option>
+                                <option value="吉尔吉斯斯坦">🇰🇬 吉尔吉斯斯坦</option>
+                                <option value="塔吉克斯坦">🇹🇯 塔吉克斯坦</option>
+                                <option value="土库曼斯坦">🇹🇲 土库曼斯坦</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>项目城市</label>
+                            <select id="targetCity">
+                                <option value="阿拉木图">阿拉木图</option>
+                                <option value="阿斯塔纳">阿斯塔纳</option>
+                                <option value="奇姆肯特">奇姆肯特</option>
+                                <option value="阿克套">阿克套</option>
+                                <option value="卡拉干达">卡拉干达</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- B2 收入参数 -->
+                <section class="input-section" id="sectionB2">
+                    <div class="section-header" onclick="toggleSection('sectionB2')">
+                        <h3>💰 B2 收入参数</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label>单台月租金 (CNY) <span class="required">*</span></label>
+                            <input type="number" id="monthlyRent" value="50000" min="0" step="1000">
+                        </div>
+                        <div class="form-group">
+                            <label>安装调试费 (CNY/台)</label>
+                            <input type="number" id="installationFee" value="5000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>跨境维保服务费 (CNY/年/台)</label>
+                            <input type="number" id="maintenanceServiceFee" value="10000" min="0">
+                        </div>
+                        <div class="form-group lease-to-sell-only" style="display:none;">
+                            <label>期末出售单价 (CNY/台)</label>
+                            <input type="number" id="endSalePrice" value="0" min="0">
+                        </div>
+                        <div class="form-group lease-to-sell-only" style="display:none;">
+                            <label>处置费用比例 (%)</label>
+                            <input type="number" id="disposalFeeRate" value="3" min="0" max="20" step="0.5">
+                        </div>
+                        <div class="output-preview">
+                            <strong>收入预览：</strong>
+                            <div id="revenuePreview">--</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- B3 采购与残值 -->
+                <section class="input-section" id="sectionB3">
+                    <div class="section-header" onclick="toggleSection('sectionB3')">
+                        <h3>🏭 B3 采购与残值</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label>采购单价 (CNY/台) <span class="required">*</span></label>
+                            <input type="number" id="purchasePrice" value="800000" min="0" step="10000">
+                        </div>
+                        <div class="form-group">
+                            <label>经济寿命 (年)</label>
+                            <input type="number" id="economicLife" value="10" min="1" max="30">
+                        </div>
+                        <div class="form-group">
+                            <label>继续经营处理方式 <span class="hint">影响利润计算口径</span></label>
+                            <select id="continuingOperationMethod">
+                                <option value="accounting">会计口径（按寿命摊销）</option>
+                                <option value="cashflow">现金流口径（一次性支出）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>期末残值率 (%) 
+                                <button type="button" class="btn-mini" onclick="openResidualValueModal()" title="查看残值曲线分析">📊 残值分析</button>
+                            </label>
+                            <input type="number" id="residualValueRate" value="10" min="0" max="50" step="1">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- B4 跨境运输与保险 -->
+                <section class="input-section highlight" id="sectionB4">
+                    <div class="section-header" onclick="toggleSection('sectionB4')">
+                        <h3>🚚 B4 跨境运输与保险</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group priority-group">
+                            <label>国际贸易术语 (Incoterms 2020) <span class="required">*</span></label>
+                            <select id="incoterms" onchange="updateTransportResponsibility()">
+                                <option value="">-- 请选择贸易术语 --</option>
+                                <option value="EXW">EXW (工厂交货) - 买方承担全部运输</option>
+                                <option value="FCA">FCA (货交承运人) - 买方承担主要运输</option>
+                                <option value="FOB">FOB (装运港船上交货) - 常用于海运</option>
+                                <option value="CFR">CFR (成本加运费) - 卖方付国际运费</option>
+                                <option value="CIF">CIF (成本+保险+运费) - 卖方付运费保险</option>
+                                <option value="DDP">DDP (完税后交货) - 卖方承担全部成本</option>
+                            </select>
+                        </div>
+                        
+                        <div class="responsibility-info" id="responsibilityInfo" style="display:none;">
+                            <div class="responsibility-summary">
+                                <h4>📋 费用承担说明</h4>
+                                <div class="responsibility-grid">
+                                    <div class="seller-costs">
+                                        <span class="cost-label seller">卖方承担</span>
+                                        <ul id="sellerCosts"></ul>
+                                    </div>
+                                    <div class="buyer-costs">
+                                        <span class="cost-label buyer">买方承担</span>
+                                        <ul id="buyerCosts"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 运输费用详细输入 -->
+                        <div class="transport-costs-section" id="transportCostsSection" style="display:none;">
+                            <h4>💰 买方承担费用明细</h4>
+                            
+                            <div class="form-group cost-item" id="domesticFreightGroup" style="display:none;">
+                                <label>国内段运费 (CNY/台) <span class="required">*</span> 
+                                    <span class="hint">工厂→装运港/边境</span>
+                                </label>
+                                <input type="number" id="domesticFreight" value="15000" min="0">
+                            </div>
+                            
+                            <div class="form-group cost-item" id="internationalFreightGroup" style="display:none;">
+                                <label>国际段运费 (CNY/台) <span class="required">*</span> 
+                                    <span class="hint">装运港→目的港/边境→项目地</span>
+                                </label>
+                                <input type="number" id="internationalFreight" value="25000" min="0">
+                            </div>
+                            
+                            <div class="form-group cost-item" id="portChargesGroup" style="display:none;">
+                                <label>口岸杂费 (CNY/台) <span class="hint">装卸/仓储/换装/通关</span></label>
+                                <input type="number" id="portCharges" value="8000" min="0">
+                            </div>
+                            
+                            <div class="form-group cost-item" id="insuranceGroup" style="display:none;">
+                                <label>运输保险费率 (%)</label>
+                                <input type="number" id="insuranceRate" value="0.8" min="0" max="5" step="0.1">
+                                <div class="form-sub-group">
+                                    <label>保险计费基数</label>
+                                    <select id="insuranceBase">
+                                        <option value="equipment">设备货值</option>
+                                        <option value="cif">含运费价值(CIF)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group cost-item" id="customsGroup" style="display:none;">
+                                <label>清关代理费 (CNY/台) <span class="hint">目的地清关服务</span></label>
+                                <input type="number" id="customsAgentFee" value="3000" min="0">
+                            </div>
+                            
+                            <div class="form-group cost-item" id="importDutyGroup" style="display:none;">
+                                <label>进口关税费率 (%) <span class="hint">按设备CIF价值计征</span></label>
+                                <input type="number" id="importDutyRate" value="0" min="0" max="30" step="0.1">
+                            </div>
+                            
+                            <div class="form-group cost-item" id="destinationDeliveryGroup" style="display:none;">
+                                <label>目的地配送费 (CNY/台) <span class="hint">清关后→项目工地</span></label>
+                                <input type="number" id="destinationDelivery" value="5000" min="0">
+                            </div>
+                        </div>
+
+                        <div class="output-preview" id="transportPreviewSection" style="display:none;">
+                            <strong>买方运输成本汇总：</strong>
+                            <div id="transportPreview">--</div>
+                            <div id="transportRatioIndicator" class="ratio-indicator">--</div>
+                            <div class="cost-breakdown" id="costBreakdown">--</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- B5 税费引擎 -->
+                <section class="input-section" id="sectionB5">
+                    <div class="section-header" onclick="toggleSection('sectionB5')">
+                        <h3>🧾 B5 税费引擎</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label>计税口径 <span class="required">*</span></label>
+                            <select id="taxBasis">
+                                <option value="CIF">CIF（到岸价）</option>
+                                <option value="FOB">FOB（离岸价）</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>完税价格构成</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="includeGoods" checked disabled> 货值</label>
+                                <label><input type="checkbox" id="includeFreight" checked> 国际运费</label>
+                                <label><input type="checkbox" id="includeInsurance" checked> 保险</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>关税税率 (%) <span class="required">*</span></label>
+                            <input type="number" id="tariffRate" value="5" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>VAT 税率 (%) <span class="required">*</span></label>
+                            <input type="number" id="vatRate" value="12" min="0" max="30" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>税收优惠</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="tariffExempt"> 免关税</label>
+                                <label><input type="checkbox" id="vatDeductible"> VAT可抵扣</label>
+                            </div>
+                        </div>
+                        <div class="form-group vat-deduct-only" style="display:none;">
+                            <label>VAT 可抵扣比例 (%)</label>
+                            <input type="number" id="vatDeductRate" value="100" min="0" max="100">
+                        </div>
+                        <div class="output-preview">
+                            <strong>税费预览：</strong>
+                            <div id="taxPreview">--</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- B6 运营与维保 -->
+                <section class="input-section" id="sectionB6">
+                    <div class="section-header" onclick="toggleSection('sectionB6')">
+                        <h3>🔧 B6 运营与维保</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label>年度跨境维保 (CNY/台) <span class="hint">人员差旅+人工</span></label>
+                            <input type="number" id="annualMaintenance" value="20000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>当地配件采购 (CNY/年/台)</label>
+                            <input type="number" id="localParts" value="15000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>当地服务商费用 (CNY/年/台)</label>
+                            <input type="number" id="localServiceFee" value="10000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>其他费用 (CNY/年/台) <span class="hint">商务对接、合规等</span></label>
+                            <input type="number" id="otherOperatingCost" value="5000" min="0">
+                        </div>
+                        <div class="output-preview">
+                            <strong>运营成本预览：</strong>
+                            <div id="operatingPreview">--</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- B7 资金与融资 -->
+                <section class="input-section" id="sectionB7">
+                    <div class="section-header" onclick="toggleSection('sectionB7')">
+                        <h3>💳 B7 资金与融资</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <!-- 全款模式 -->
+                        <div class="payment-mode full-payment-mode">
+                            <h4>全款垫资参数</h4>
+                            <div class="form-group">
+                                <label>采购垫资比例 (%)</label>
+                                <input type="number" id="purchaseAdvanceRate" value="100" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>运费/税费垫资比例 (%)</label>
+                                <input type="number" id="freightTaxAdvanceRate" value="100" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>垫资周期 (月)</label>
+                                <input type="number" id="advancePeriod" value="3" min="1" max="24">
+                            </div>
+                            <div class="form-group">
+                                <label>年化资金成本利率 (%)</label>
+                                <input type="number" id="capitalCostRate" value="6" min="0" max="30" step="0.1">
+                            </div>
+                        </div>
+                        <!-- 融资模式 -->
+                        <div class="payment-mode financing-mode" style="display:none;">
+                            <h4>融资租赁参数</h4>
+                            <div class="form-group">
+                                <label>首付比例 (%)</label>
+                                <input type="number" id="downPaymentRate" value="30" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>融资利率 (年化%)</label>
+                                <input type="number" id="financingRate" value="8" min="0" max="30" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>融资期数 (月)</label>
+                                <input type="number" id="financingTerm" value="24" min="1" max="120">
+                            </div>
+                            <div class="form-group">
+                                <label>还款方式</label>
+                                <select id="repaymentMethod">
+                                    <option value="equal">等额本息</option>
+                                    <option value="bullet">到期还本付息</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>手续费率 (%)</label>
+                                <input type="number" id="handlingFeeRate" value="1" min="0" max="10" step="0.1">
+                            </div>
+                        </div>
+                        <div class="output-preview">
+                            <strong>资金成本预览：</strong>
+                            <div id="financingPreview">--</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 汇率模块 -->
+                <section class="input-section" id="sectionExchange">
+                    <div class="section-header" onclick="toggleSection('sectionExchange')">
+                        <h3>💱 汇率设置</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label>租金报价币种</label>
+                            <select id="rentCurrency">
+                                <option value="CNY">人民币 (CNY)</option>
+                                <option value="KZT">坚戈 (KZT)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>基准汇率 (1 CNY = ? KZT) <span class="required">*</span></label>
+                            <div class="exchange-input-group">
+                                <input type="number" id="exchangeRate" value="65" min="1" step="0.01">
+                                <button type="button" class="btn-fetch-rate" onclick="fetchExchangeRate()" title="获取实时汇率">
+                                    🔄 获取实时汇率
+                                </button>
+                            </div>
+                            <div class="rate-source" id="rateSource"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>汇率波动范围 (±%)</label>
+                            <input type="number" id="exchangeVolatility" value="5" min="0" max="30" step="1">
+                        </div>
+                        <div class="exchange-links">
+                            <a href="https://www.boc.cn/sourcedb/whpj/" target="_blank" rel="noopener">📊 中国银行外汇牌价</a>
+                            <a href="https://www.nationalbank.kz/en/exchangerates/ezhednevnye-oficialnye-rynochnye-kursy-valyut" target="_blank" rel="noopener">🏦 哈萨克斯坦央行</a>
+                        </div>
+                        <div class="output-preview">
+                            <strong>汇率情景：</strong>
+                            <div id="exchangePreview">--</div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="calculate-actions">
+                    <button class="btn-calculate" onclick="calculate()">🔄 立即测算</button>
+                    <button class="btn-reset" onclick="resetForm()">🔃 重置参数</button>
+                </div>
+            </aside>
+
+            <!-- 右侧输出区 -->
+            <section class="output-panel">
+                <!-- PDF报告头部（仅打印时显示） -->
+                <div class="pdf-report-header" style="display:none;">
+                    <h1>🚜 中哈跨境机械设备租售测算报告</h1>
+                    <div class="report-meta">
+                        <span id="reportEquipment">设备: --</span>
+                        <span>|</span>
+                        <span id="reportMode">模式: --</span>
+                        <span>|</span>
+                        <span id="reportDate">日期: --</span>
+                    </div>
+                </div>
+
+                <!-- 未达标警告条 -->
+                <div class="compliance-alert" id="complianceAlert" style="display:none;">
+                    <div class="alert-header">
+                        <span class="alert-icon">⚠️</span>
+                        <span class="alert-title" id="alertTitle">部分指标未达标</span>
+                    </div>
+                    <div class="alert-issues" id="alertIssues">
+                        <!-- 动态填充 -->
+                    </div>
+                </div>
+
+                <!-- 硬指标KPI卡片：3种毛利率 + 2种回本 -->
+                <div class="kpi-section">
+                    <div class="kpi-section-header">
+                        <h3>📊 毛利率指标 <span class="threshold-hint">达标线：≥30%</span></h3>
+                    </div>
+                    <div class="kpi-cards gm-cards">
+                        <div class="kpi-card gm-card" onclick="showKPIDetail('gm1')">
+                            <div class="kpi-badge">GM1</div>
+                            <div class="kpi-label">经营毛利率</div>
+                            <div class="kpi-value" id="kpiGM1">--</div>
+                            <div class="kpi-indicator" id="kpiGM1Indicator">--</div>
+                            <div class="kpi-formula">收入-可变成本</div>
+                            <div class="kpi-detail-icon">📊</div>
+                        </div>
+                        <div class="kpi-card gm-card" onclick="showKPIDetail('gm2')">
+                            <div class="kpi-badge">GM2</div>
+                            <div class="kpi-label">含摊销毛利率</div>
+                            <div class="kpi-value" id="kpiGM2">--</div>
+                            <div class="kpi-indicator" id="kpiGM2Indicator">--</div>
+                            <div class="kpi-formula">收入-可变-折旧</div>
+                            <div class="kpi-detail-icon">📊</div>
+                        </div>
+                        <div class="kpi-card gm-card" onclick="showKPIDetail('gm3')">
+                            <div class="kpi-badge">GM3</div>
+                            <div class="kpi-label">全口径毛利率</div>
+                            <div class="kpi-value" id="kpiGM3">--</div>
+                            <div class="kpi-indicator" id="kpiGM3Indicator">--</div>
+                            <div class="kpi-formula">收入-可变-折旧-资金</div>
+                            <div class="kpi-detail-icon">📊</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-section">
+                    <div class="kpi-section-header">
+                        <h3>⏱️ 回本指标 <span class="threshold-hint">达标线：≤24个月</span></h3>
+                    </div>
+                    <div class="kpi-cards pb-cards">
+                        <div class="kpi-card pb-card" onclick="showKPIDetail('pb1')">
+                            <div class="kpi-badge">PB1</div>
+                            <div class="kpi-label">项目回本</div>
+                            <div class="kpi-value" id="kpiPB1">--</div>
+                            <div class="kpi-unit">月</div>
+                            <div class="kpi-indicator" id="kpiPB1Indicator">--</div>
+                            <div class="kpi-formula">不考虑融资</div>
+                            <div class="kpi-detail-icon">📊</div>
+                        </div>
+                        <div class="kpi-card pb-card" onclick="showKPIDetail('pb2')">
+                            <div class="kpi-badge">PB2</div>
+                            <div class="kpi-label">股东回本</div>
+                            <div class="kpi-value" id="kpiPB2">--</div>
+                            <div class="kpi-unit">月</div>
+                            <div class="kpi-indicator" id="kpiPB2Indicator">--</div>
+                            <div class="kpi-formula">考虑融资结构</div>
+                            <div class="kpi-detail-icon">📊</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 达标阈值反推 -->
+                <div class="threshold-panel" id="thresholdPanel">
+                    <div class="threshold-header" onclick="toggleThresholdPanel()">
+                        <h3>🎯 达标阈值反推</h3>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="threshold-content">
+                        <div class="threshold-group">
+                            <h4>毛利率≥30%所需最低月租金</h4>
+                            <div class="threshold-items">
+                                <div class="threshold-item">
+                                    <span class="label">GM1达标</span>
+                                    <span class="value" id="thresholdRentGM1">--</span>
+                                    <span class="compare" id="thresholdRentGM1Compare"></span>
+                                </div>
+                                <div class="threshold-item">
+                                    <span class="label">GM2达标</span>
+                                    <span class="value" id="thresholdRentGM2">--</span>
+                                    <span class="compare" id="thresholdRentGM2Compare"></span>
+                                </div>
+                                <div class="threshold-item">
+                                    <span class="label">GM3达标</span>
+                                    <span class="value" id="thresholdRentGM3">--</span>
+                                    <span class="compare" id="thresholdRentGM3Compare"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="threshold-group">
+                            <h4>回本≤24个月所需参数</h4>
+                            <div class="threshold-items">
+                                <div class="threshold-item">
+                                    <span class="label">最大跨境成本</span>
+                                    <span class="value" id="thresholdMaxTransport">--</span>
+                                    <span class="compare" id="thresholdMaxTransportCompare"></span>
+                                </div>
+                                <div class="threshold-item">
+                                    <span class="label">最大资金利率</span>
+                                    <span class="value" id="thresholdMaxRate">--</span>
+                                    <span class="compare" id="thresholdMaxRateCompare"></span>
+                                </div>
+                                <div class="threshold-item">
+                                    <span class="label">最短垫资周期</span>
+                                    <span class="value" id="thresholdMinPeriod">--</span>
+                                    <span class="compare" id="thresholdMinPeriodCompare"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="charts-container">
+                    <!-- 双回本曲线图 -->
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <h3>📈 回本分析（PB1 vs PB2）</h3>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="legend-color pb1"></span>PB1 项目回本</span>
+                                <span class="legend-item"><span class="legend-color pb2"></span>PB2 股东回本</span>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="paybackChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>📊 成本结构分析</h3>
+                            <div class="chart-toggle">
+                                <button class="chart-btn active" onclick="switchCostChart('bar')">柱状图</button>
+                                <button class="chart-btn" onclick="switchCostChart('pie')">环形图</button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="costChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>📈 月度现金流</h3>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="cashFlowChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <h3>📉 累计现金流与回本分析</h3>
+                            <div class="chart-toggle">
+                                <label><input type="checkbox" id="showScenarios" onchange="updateCumulativeChart()"> 显示情景对比</label>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="cumulativeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 敏感性分析 -->
+                <div class="sensitivity-panel">
+                    <div class="chart-header">
+                        <h3>🎯 敏感性分析</h3>
+                    </div>
+                    <div class="sensitivity-controls">
+                        <div class="form-group">
+                            <label>目标指标</label>
+                            <select id="sensitivityTarget" onchange="updateSensitivity()">
+                                <option value="profit">年度利润</option>
+                                <option value="payback">回本月</option>
+                                <option value="irr">IRR</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>变动因素</label>
+                            <select id="sensitivityVariable" onchange="updateSensitivity()">
+                                <option value="rent">租金</option>
+                                <option value="freight">运费</option>
+                                <option value="tax">税率</option>
+                                <option value="exchange">汇率</option>
+                                <option value="interest">利率</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="sensitivityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 明细表 -->
+                <div class="detail-tables">
+                    <div class="table-section">
+                        <div class="table-header" onclick="toggleTable('revenueTable')">
+                            <h3>📋 收入明细</h3>
+                            <span class="collapse-icon">▼</span>
+                        </div>
+                        <div class="table-content" id="revenueTable">
+                            <table>
+                                <thead>
+                                    <tr><th>项目</th><th>单价</th><th>数量</th><th class="currency-header">金额(CNY)</th></tr>
+                                </thead>
+                                <tbody id="revenueTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="table-section">
+                        <div class="table-header" onclick="toggleTable('costTable')">
+                            <h3>📋 跨境成本明细</h3>
+                            <span class="collapse-icon">▼</span>
+                        </div>
+                        <div class="table-content" id="costTable">
+                            <table>
+                                <thead>
+                                    <tr><th>项目</th><th>计算口径</th><th class="currency-header">金额(CNY)</th><th>占比</th></tr>
+                                </thead>
+                                <tbody id="costTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="table-section">
+                        <div class="table-header" onclick="toggleTable('operatingTable')">
+                            <h3>📋 运营维保明细</h3>
+                            <span class="collapse-icon">▼</span>
+                        </div>
+                        <div class="table-content collapsed" id="operatingTable">
+                            <table>
+                                <thead>
+                                    <tr><th>项目</th><th class="currency-header">年度金额(CNY)</th><th class="currency-header">租期总额(CNY)</th></tr>
+                                </thead>
+                                <tbody id="operatingTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="table-section">
+                        <div class="table-header" onclick="toggleTable('financingTable')">
+                            <h3>📋 融资/垫资明细</h3>
+                            <span class="collapse-icon">▼</span>
+                        </div>
+                        <div class="table-content collapsed" id="financingTable">
+                            <table>
+                                <thead>
+                                    <tr><th>项目</th><th class="currency-header">金额(CNY)</th><th>说明</th></tr>
+                                </thead>
+                                <tbody id="financingTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PDF报告页脚（仅打印时显示） -->
+                <div class="pdf-report-footer" style="display:none;">
+                    <p>本报告由「中哈跨境机械设备租售测算系统」自动生成 | 仅供内部决策参考</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- KPI详情弹窗 -->
+        <div class="modal" id="kpiModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">KPI详情</h3>
+                    <button class="modal-close" onclick="closeModal()">×</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- 动态内容 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保存版本弹窗 -->
+    <div class="version-modal" id="versionModal">
+        <div class="version-modal-content">
+            <div class="version-modal-header">
+                <h3>📌 保存测算版本</h3>
+                <button class="version-modal-close" onclick="closeVersionModal()">&times;</button>
+            </div>
+            <div class="version-modal-body">
+                <div class="form-group">
+                    <label>版本名称 *</label>
+                    <input type="text" id="versionName" placeholder="例如：方案A-调低租金">
+                </div>
+                <div class="form-group">
+                    <label>情景类型</label>
+                    <select id="versionScenario">
+                        <option value="baseline">基准情景</option>
+                        <option value="optimistic">乐观情景</option>
+                        <option value="conservative">保守情景</option>
+                        <option value="what-if">假设分析</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>备注说明</label>
+                    <textarea id="versionNote" rows="3" placeholder="版本说明（可选）"></textarea>
+                </div>
+            </div>
+            <div class="version-modal-footer">
+                <button class="btn-cancel" onclick="closeVersionModal()">取消</button>
+                <button class="btn-submit" onclick="saveVersion()">保存版本</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 残值分析弹窗 -->
+    <div class="modal-overlay" id="residualValueModal" style="display:none;">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3>📊 设备残值分析</h3>
+                <button class="modal-close" onclick="closeResidualValueModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="rv-summary">
+                        <div class="rv-data-source">
+                            <span class="data-source-label">📋 数据来源：B1项目信息 + B3采购与残值</span>
+                        </div>
+                        <div class="rv-info-item">
+                            <span class="rv-label">设备原值</span>
+                            <span class="rv-value" id="rvOriginalValue">--</span>
+                        </div>
+                        <div class="rv-info-item">
+                            <span class="rv-label">经济寿命</span>
+                            <span class="rv-value" id="rvEconomicLife">--</span>
+                        </div>
+                        <div class="rv-info-item">
+                            <span class="rv-label">当前租期</span>
+                            <span class="rv-value" id="rvLeaseTerm">--</span>
+                        </div>
+                        <div class="rv-info-item highlight">
+                            <span class="rv-label">租期末残值</span>
+                            <span class="rv-value" id="rvEndValue">--</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rv-methods">
+                    <label>折旧方法：</label>
+                    <select id="depreciationMethod" onchange="updateResidualValueChart()">
+                        <option value="straight">直线法（平均年限法）</option>
+                        <option value="double">双倍余额递减法</option>
+                        <option value="sum">年数总和法</option>
+                        <option value="units">工作量法（按使用强度）</option>
+                    </select>
+                    <div class="method-desc" id="methodDesc">
+                        每年折旧额相等，残值曲线为直线下降
+                    </div>
+                </div>
+                
+                <div class="rv-chart-container">
+                    <canvas id="residualValueChart"></canvas>
+                </div>
+                
+                <div class="rv-table-container">
+                    <h4>📋 逐年折旧明细表</h4>
+                    <table class="rv-table">
+                        <thead>
+                            <tr>
+                                <th>年份</th>
+                                <th>年初账面价值</th>
+                                <th>本年折旧</th>
+                                <th>累计折旧</th>
+                                <th>年末账面价值</th>
+                                <th>残值率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rvTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="rv-notes">
+                    <h4>📝 折旧方法说明</h4>
+                    <ul>
+                        <li><strong>直线法</strong>：每年折旧相等 = (原值 - 残值) / 经济寿命。适用于磨损均匀的设备。</li>
+                        <li><strong>双倍余额递减法</strong>：前期折旧多，后期少。年折旧率 = 2 / 经济寿命。适用于技术更新快的设备。</li>
+                        <li><strong>年数总和法</strong>：按剩余寿命权重分配折旧。适用于前期效能高的设备。</li>
+                        <li><strong>工作量法</strong>：按实际使用量折旧。适用于使用强度不均匀的设备。</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="applyResidualValue()">📊 应用到B3残值率</button>
+                <button class="btn btn-primary" onclick="closeResidualValueModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 容器 -->
+    <div class="toast-container"></div>
+
+    <script src="db.js"></script>
+    <script src="calculator.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+    <script src="project-integration.js"></script>
+    <script src="pdf-export.js"></script>
+    <script src="ai-assistant.js"></script>
+</body>
+</html>

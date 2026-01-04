@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工程机械价格分析系统 - 金哲工程机械</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .main-panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box button {
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .search-box button:hover {
+            transform: translateY(-2px);
+        }
+
+        .search-box button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-bar {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status-bar.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-bar.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-bar.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .result-panel {
+            display: none;
+        }
+
+        .result-panel.show {
+            display: block;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .specs-table th,
+        .specs-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .specs-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .specs-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏗️ 工程机械价格分析系统</h1>
+            <p>智能爬虫 · 实时采集 · 专业报告</p>
+        </div>
+
+        <div class="main-panel">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="keywordInput" 
+                    placeholder="请输入设备型号，如：徐工XCT25、XGC88000、三一STC250T"
+                    onkeypress="if(event.key==='Enter') startCrawl()"
+                >
+                <button id="crawlBtn" onclick="startCrawl()">🕷️ 开始抓取</button>
+            </div>
+
+            <div id="statusBar" class="status-bar">
+                <span id="statusText">请输入设备型号，点击"开始抓取"获取数据</span>
+            </div>
+
+            <div id="resultPanel" class="result-panel">
+                <!-- 基本信息 -->
+                <div class="info-card">
+                    <h3>📊 设备基本信息</h3>
+                    <div class="info-row">
+                        <span class="info-label">设备型号</span>
+                        <span class="info-value" id="equipmentModel">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">设备类型</span>
+                        <span class="info-value" id="equipmentType">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">额定吨位</span>
+                        <span class="info-value" id="equipmentTonnage">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">数据来源</span>
+                        <span class="info-value" id="dataSource">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">采集时间</span>
+                        <span class="info-value" id="crawlTime">-</span>
+                    </div>
+                </div>
+
+                <!-- 技术参数 -->
+                <div class="info-card" id="specsCard" style="display:none;">
+                    <h3>🔧 核心技术参数</h3>
+                    <table class="specs-table">
+                        <thead>
+                            <tr>
+                                <th>参数名称</th>
+                                <th>参数值</th>
+                            </tr>
+                        </thead>
+                        <tbody id="specsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 价格信息 -->
+                <div class="info-card" id="priceCard" style="display:none;">
+                    <h3>💰 价格信息</h3>
+                    <div id="priceContent"></div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="saveToDatabase()">
+                        💾 保存到数据库
+                    </button>
+                    <button class="btn btn-warning" onclick="exportPDF()">
+                        📄 导出PDF报告
+                    </button>
+                </div>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                </svg>
+                <p>暂无数据，请先抓取设备信息</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+        let engineReady = false;
+
+        // 检测爬虫引擎（多种方式）
+        function checkCrawlerEngine() {
+            // 方式1: 检查全局标志
+            if (window.__CRAWLER_ENGINE_READY__) {
+                engineReady = true;
+                console.log('✅ 通过标志检测到爬虫引擎');
+                updateStatus('success', '🤖 爬虫引擎已就绪，可以开始抓取数据');
+                return true;
+            }
+            
+            // 方式2: 检查API对象
+            if (window.MachineryCrawler) {
+                engineReady = true;
+                console.log('✅ 通过API检测到爬虫引擎');
+                updateStatus('success', '🤖 爬虫引擎已就绪，可以开始抓取数据');
+                return true;
+            }
+            
+            return false;
+        }
+
+        // 监听爬虫引擎就绪事件
+        window.addEventListener('MachineryEngineReady', function(e) {
+            engineReady = true;
+            console.log('✅ 收到爬虫引擎就绪事件:', e.detail);
+            updateStatus('success', '🤖 爬虫引擎已就绪，可以开始抓取数据');
+        });
+
+        // 页面加载完成后检测
+        window.addEventListener('load', function() {
+            console.log('📄 页面已加载，检测爬虫引擎...');
+            
+            // 立即检测一次
+            if (checkCrawlerEngine()) {
+                return;
+            }
+            
+            // 轮询检测（最多5秒）
+            let checkCount = 0;
+            const checkInterval = setInterval(() => {
+                checkCount++;
+                console.log(`🔍 第${checkCount}次检测爬虫引擎...`);
+                
+                if (checkCrawlerEngine()) {
+                    clearInterval(checkInterval);
+                } else if (checkCount >= 10) {
+                    clearInterval(checkInterval);
+                    updateStatus('error', '⚠️ 爬虫引擎未检测到，请确保已安装油猴插件和脚本');
+                    console.error('❌ 油猴脚本未加载');
+                    console.log('💡 请检查：');
+                    console.log('  1. Tampermonkey 扩展已安装并启用');
+                    console.log('  2. machinery-crawler-engine.user.js 脚本已安装');
+                    console.log('  3. 脚本在此域名下已启用（查看油猴图标）');
+                }
+            }, 500);
+        });
+
+        // 更新状态栏
+        function updateStatus(type, message) {
+            const statusBar = document.getElementById('statusBar');
+            const statusText = document.getElementById('statusText');
+            
+            statusBar.className = 'status-bar ' + type;
+            statusText.innerHTML = message;
+        }
+
+        // 开始抓取
+        async function startCrawl() {
+            const keyword = document.getElementById('keywordInput').value.trim();
+            
+            if (!keyword) {
+                alert('请输入设备型号');
+                return;
+            }
+
+            // 再次检测引擎
+            if (!engineReady && !checkCrawlerEngine()) {
+                alert('爬虫引擎未就绪！\n\n请检查：\n1. Tampermonkey已安装\n2. machinery-crawler-engine.user.js已安装\n3. 脚本已启用（查看油猴图标应显示1）\n4. 按F12查看控制台错误');
+                console.error('❌ 无法调用爬虫引擎');
+                return;
+            }
+
+            const crawlBtn = document.getElementById('crawlBtn');
+            crawlBtn.disabled = true;
+            crawlBtn.innerHTML = '<span class="spinner"></span>抓取中...';
+
+            updateStatus('loading', `🕷️ 正在从铁甲网、路面机械网等平台爬取 "${keyword}" 的数据...`);
+
+            try {
+                console.log('📡 调用爬虫引擎: window.MachineryCrawler.crawlData');
+                const result = await window.MachineryCrawler.crawlData(keyword);
+                console.log('📥 爬虫返回结果:', result);
+                
+                crawlBtn.disabled = false;
+                crawlBtn.innerHTML = '🕷️ 开始抓取';
+
+                if (result.success) {
+                    currentData = result.data;
+                    displayResult(result.data, keyword);
+                    updateStatus('success', `✅ 数据爬取成功！共采集到 ${Object.keys(result.data.specs).length} 项技术参数`);
+                } else {
+                    updateStatus('error', `❌ 爬取失败: ${result.message}`);
+                    alert(result.message);
+                }
+            } catch (error) {
+                crawlBtn.disabled = false;
+                crawlBtn.innerHTML = '🕷️ 开始抓取';
+                updateStatus('error', `❌ 爬取出错: ${error.message}`);
+                console.error('爬虫调用失败:', error);
+            }
+        }
+
+        // 显示结果
+        function displayResult(data, keyword) {
+            // 隐藏空状态
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('resultPanel').classList.add('show');
+
+            // 基本信息
+            document.getElementById('equipmentModel').textContent = keyword;
+            document.getElementById('equipmentType').textContent = data.type || '-';
+            document.getElementById('equipmentTonnage').textContent = data.tonnage ? data.tonnage + '吨' : '-';
+            document.getElementById('dataSource').textContent = data.source || '网络爬虫';
+            document.getElementById('crawlTime').textContent = new Date(data.timestamp).toLocaleString('zh-CN');
+
+            // 技术参数
+            if (Object.keys(data.specs).length > 0) {
+                const specsCard = document.getElementById('specsCard');
+                const tbody = document.getElementById('specsTableBody');
+                specsCard.style.display = 'block';
+                tbody.innerHTML = '';
+
+                for (const [key, value] of Object.entries(data.specs)) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${key}</td>
+                        <td>${value}</td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            }
+
+            // 价格信息
+            if (data.prices && Object.keys(data.prices).length > 0) {
+                const priceCard = document.getElementById('priceCard');
+                const priceContent = document.getElementById('priceContent');
+                priceCard.style.display = 'block';
+                priceContent.innerHTML = '';
+
+                if (data.prices.newMachine) {
+                    priceContent.innerHTML += `
+                        <div class="info-row">
+                            <span class="info-label">新机价格</span>
+                            <span class="info-value" style="color:#e74c3c;">
+                                ${data.prices.newMachine.min} - ${data.prices.newMachine.max} ${data.prices.newMachine.unit}
+                            </span>
+                        </div>
+                    `;
+                }
+
+                if (data.prices.used) {
+                    priceContent.innerHTML += `
+                        <div class="info-row">
+                            <span class="info-label">二手价格</span>
+                            <span class="info-value" style="color:#ff9800;">
+                                ${data.prices.used.min} - ${data.prices.used.max} ${data.prices.used.unit}
+                            </span>
+                        </div>
+                    `;
+                }
+
+                if (data.prices.rental) {
+                    let rentalText = [];
+                    if (data.prices.rental.daily) rentalText.push(`日租:${data.prices.rental.daily}元`);
+                    if (data.prices.rental.monthly) rentalText.push(`月租:${data.prices.rental.monthly}元`);
+                    
+                    priceContent.innerHTML += `
+                        <div class="info-row">
+                            <span class="info-label">租赁价格</span>
+                            <span class="info-value" style="color:#28a745;">
+                                ${rentalText.join(' / ')}
+                            </span>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // 保存到数据库
+        async function saveToDatabase() {
+            if (!currentData) {
+                alert('没有可保存的数据');
+                return;
+            }
+
+            updateStatus('loading', '💾 正在保存到数据库...');
+
+            try {
+                // 这里调用你的后端API保存数据
+                const response = await fetch('/api/machinery/equipment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        keyword: document.getElementById('equipmentModel').textContent,
+                        data: currentData
+                    })
+                });
+
+                if (response.ok) {
+                    updateStatus('success', '✅ 数据已成功保存到数据库');
+                } else {
+                    updateStatus('error', '❌ 保存失败，请重试');
+                }
+            } catch (error) {
+                updateStatus('error', '❌ 保存出错: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        // 导出PDF
+        async function exportPDF() {
+            if (!currentData) {
+                alert('没有可导出的数据');
+                return;
+            }
+
+            updateStatus('loading', '📄 正在生成PDF报告...');
+
+            try {
+                const keyword = document.getElementById('equipmentModel').textContent;
+                const result = await window.MachineryCrawler.generatePDF(currentData, keyword);
+
+                if (result.success) {
+                    window.MachineryCrawler.downloadPDF(result.blob, result.fileName);
+                    updateStatus('success', `✅ PDF报告已生成: ${result.fileName}`);
+                } else {
+                    updateStatus('error', '❌ PDF生成失败: ' + result.message);
+                }
+            } catch (error) {
+                updateStatus('error', '❌ PDF生成出错: ' + error.message);
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

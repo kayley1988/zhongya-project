@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合同审核 - 金哲工程机械</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .header h1 { color: #333; font-size: 28px; }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-btn:hover { background: #5a6fd6; }
+        
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 60px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+        }
+        .upload-area:hover { border-color: #667eea; background: #f8f9ff; }
+        .upload-area h3 { color: #666; margin-bottom: 15px; }
+        .upload-area p { color: #999; font-size: 14px; }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+        .feature-card .icon { font-size: 40px; margin-bottom: 15px; }
+        .feature-card h4 { color: #333; margin-bottom: 10px; }
+        .feature-card p { color: #666; font-size: 13px; }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-secondary { background: #f0f0f0; color: #666; }
+        .btn:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 合同审核</h1>
+            <a href="./main.html" class="back-btn">← 返回主页</a>
+        </div>
+        
+        <div class="upload-area">
+            <h3>📄 上传合同文件</h3>
+            <p>支持 PDF、Word、图片格式，可同时上传多语言版本进行对比</p>
+            <input type="file" id="contractFile" style="margin-top: 20px;">
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="icon">🔍</div>
+                <h4>条款提取</h4>
+                <p>自动识别关键条款、金额、日期、当事方信息</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">⚠️</div>
+                <h4>风险评估</h4>
+                <p>智能分析合同风险点，给出修改建议</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📋</div>
+                <h4>模板匹配</h4>
+                <p>与标准合同模板对比，标注差异条款</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🌐</div>
+                <h4>多语对照</h4>
+                <p>中/英/俄版本并列显示，术语一致性校验</p>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="alert('合同审核功能开发中...')">开始审核</button>
+            <button class="btn btn-secondary" onclick="alert('模板库功能开发中...')">合同模板库</button>
+        </div>
+    </div>
+</body>
+</html>

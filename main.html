@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金哲工程机械 - 跨境贸易管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .card.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card.primary .card-title {
+            color: white;
+        }
+
+        .card.primary .card-desc {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .card.primary .tag {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            padding: 20px;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌏 金哲工程机械</h1>
+            <p>跨境贸易管理系统 | Cross-Border Trade Management System</p>
+        </div>
+
+        <!-- 1. 通用功能区（最常用，放最前） -->
+        <div class="section" id="general">
+            <div class="section-title">
+                <a href="./general-hub.html" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    🛠️ 通用功能区
+                    <span style="font-size: 14px; opacity: 0.7;">→</span>
+                </a>
+            </div>
+            <div class="cards">
+                <a href="./project.html" class="card">
+                    <div class="card-icon">📋</div>
+                    <div class="card-title">招标采购管理</div>
+                    <div class="card-desc">项目招投标、采购流程管理、供应商评估</div>
+                    <div class="card-tags">
+                        <span class="tag">招投标</span>
+                        <span class="tag">供应商</span>
+                    </div>
+                </a>
+
+                <a href="./finance.html" class="card">
+                    <div class="card-icon">💰</div>
+                    <div class="card-title">财务管理</div>
+                    <div class="card-desc">跨境支付、汇率管理、财务报表、成本分析</div>
+                    <div class="card-tags">
+                        <span class="tag">财务报表</span>
+                        <span class="tag">汇率</span>
+                    </div>
+                </a>
+
+                <a href="./dashboard.html" class="card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">数据看板</div>
+                    <div class="card-desc">销售数据、市场趋势、库存分析、业绩仪表盘</div>
+                    <div class="card-tags">
+                        <span class="tag">可视化</span>
+                        <span class="tag">实时数据</span>
+                    </div>
+                </a>
+
+                <a href="./list.html" class="card">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">设备清单管理</div>
+                    <div class="card-desc">库存管理、设备档案、维修记录、调拨追踪</div>
+                    <div class="card-tags">
+                        <span class="tag">库存</span>
+                        <span class="tag">档案</span>
+                    </div>
+                </a>
+
+                <a href="./pricing.html" class="card">
+                    <div class="card-icon">💵</div>
+                    <div class="card-title">智能定价系统</div>
+                    <div class="card-desc">市场价格分析、智能定价建议、竞争对手追踪</div>
+                    <div class="card-tags">
+                        <span class="tag">AI定价</span>
+                        <span class="tag">价格分析</span>
+                    </div>
+                </a>
+
+                <a href="./inspection.html" class="card">
+                    <div class="card-icon">🔍</div>
+                    <div class="card-title">智能验机</div>
+                    <div class="card-desc">设备验机流程、检测清单、报告生成与质量评估</div>
+                    <div class="card-tags">
+                        <span class="tag">验机报告</span>
+                        <span class="tag">质量检测</span>
+                    </div>
+                </a>
+
+                <a href="./multi-crawler-demo.html" class="card">
+                    <div class="card-icon">🕷️</div>
+                    <div class="card-title">多网站爬虫工具</div>
+                    <div class="card-desc">一键爬取铁甲网、工程机械在线等多个网站的价格数据</div>
+                    <div class="card-tags">
+                        <span class="tag">数据爬取</span>
+                        <span class="tag">Excel导出</span>
+                    </div>
+                </a>
+
+                <a href="./settings.html" class="card">
+                    <div class="card-icon">⚙️</div>
+                    <div class="card-title">系统设置</div>
+                    <div class="card-desc">用户管理、权限配置、系统参数、数据备份</div>
+                    <div class="card-tags">
+                        <span class="tag">设置</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 2. 跨境贸易区（区域市场视图） -->
+        <div class="section" id="trade">
+            <div class="section-title">
+                <a href="./trade-hub.html" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    🌐 跨境贸易区
+                    <span style="font-size: 14px; opacity: 0.7;">→</span>
+                </a>
+            </div>
+            <div class="cards">
+                <a href="./data.html" class="card primary">
+                    <div class="card-icon">🇰🇿</div>
+                    <div class="card-title">中亚市场</div>
+                    <div class="card-desc">哈萨克斯坦、乌兹别克斯坦等中亚五国市场分析与价格查询</div>
+                    <div class="card-tags">
+                        <span class="tag">价格分析</span>
+                        <span class="tag">多语种</span>
+                        <span class="tag">AI助手</span>
+                    </div>
+                </a>
+
+                <a href="./southeast-asia.html" class="card">
+                    <div class="card-icon">🇹🇭</div>
+                    <div class="card-title">东南亚市场</div>
+                    <div class="card-desc">泰国、越南、印尼等东南亚市场拓展与分析</div>
+                    <div class="card-tags">
+                        <span class="tag">市场分析</span>
+                        <span class="tag">本地化</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 3. 法律板块（合同/证据/多文本对比） -->
+        <div class="section" id="legal">
+            <div class="section-title">
+                <a href="./legal-hub.html" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    ⚖️ 法律板块
+                    <span style="font-size: 14px; opacity: 0.7;">→</span>
+                </a>
+            </div>
+            <div class="cards">
+                <a href="./contract-review.html" class="card">
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">合同审核</div>
+                    <div class="card-desc">合同模板管理、条款提取、风险提示、智能审查</div>
+                    <div class="card-tags">
+                        <span class="tag">风险评估</span>
+                        <span class="tag">条款库</span>
+                    </div>
+                </a>
+
+                <a href="./evidence-review.html" class="card">
+                    <div class="card-icon">🔐</div>
+                    <div class="card-title">证据审核</div>
+                    <div class="card-desc">验机报告、交易记录证据链管理、合规审计</div>
+                    <div class="card-tags">
+                        <span class="tag">证据链</span>
+                        <span class="tag">审计追踪</span>
+                    </div>
+                </a>
+
+                <a href="./text-compare.html" class="card">
+                    <div class="card-icon">🔄</div>
+                    <div class="card-title">多文本对比</div>
+                    <div class="card-desc">中/英/俄多语言合同并列比对、差异标注、术语校验</div>
+                    <div class="card-tags">
+                        <span class="tag">多语对比</span>
+                        <span class="tag">差异分析</span>
+                    </div>
+                </a> id="language">
+            <div class="section-title">
+                <a href="./language-hub.html" style="color: white; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    📚 外语学习区
+                    <span style="font-size: 14px; opacity: 0.7;">→</span>
+                </a>
+            
+        </div>
+
+        <!-- 4. 外语学习区（支持性服务，放最后） -->
+        <div class="section">
+            <div class="section-title">📚 外语学习区</div>
+            <div class="cards">
+                <a href="./russian-learning.html" class="card">
+                    <div class="card-icon">🇷🇺</div>
+                    <div class="card-title">俄语学习</div>
+                    <div class="card-desc">工程机械专业俄语词汇、对话、合同术语学习</div>
+                    <div class="card-tags">
+                        <span class="tag">词汇库</span>
+                        <span class="tag">AI对话</span>
+                    </div>
+                </a>
+
+                <a href="./english-learning.html" class="card">
+                    <div class="card-icon">🇬🇧</div>
+                    <div class="card-title">英语学习</div>
+                    <div class="card-desc">国际贸易英语、技术文档翻译、商务沟通</div>
+                    <div class="card-tags">
+                        <span class="tag">商务英语</span>
+                        <span class="tag">技术文档</span>
+                    </div>
+                </a>
+
+                <a href="./translation.html" class="card">
+                    <div class="card-icon">🌍</div>
+                    <div class="card-title">多语种翻译</div>
+                    <div class="card-desc">哈萨克语、乌兹别克语、泰语等小语种智能翻译</div>
+                    <div class="card-tags">
+                        <span class="tag">AI翻译</span>
+                        <span class="tag">术语库</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 金哲工程机械 | Jinzhe Machinery | Powered by AI</p>
+            <p style="margin-top: 10px; font-size: 12px;">
+                服务市场：中亚 🇰🇿 🇺🇿 🇹🇲 🇰🇬 🇹🇯 | 东南亚 🇹🇭 🇻🇳 🇮🇩 | 全球贸易
+            </p>
+        </div>
+    </div>
+</body>
+</html>

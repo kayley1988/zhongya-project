@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中亚跨境项目管理</title>
+    <link rel="stylesheet" href="list.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">中亚跨境设备租售管理</span>
+            </div>
+            <div class="nav-tabs">
+                <a href="list.html" class="nav-tab active">📋 项目列表</a>
+                <a href="pricing.html" class="nav-tab">💰 定价测算</a>
+                <a href="fx.html" class="nav-tab">💱 汇率管理</a>
+                <a href="data.html" class="nav-tab">🗄️ 数据中心</a>
+                <a href="settings.html" class="nav-tab">⚙️ 系统设置</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn" onclick="refreshData()" title="刷新数据">🔄 刷新</button>
+            <button class="nav-btn danger" onclick="resetAllData()" title="创建示例数据">🎆 创建示例数据</button>
+        </div>
+    </nav>
+
+    <!-- 页面标题区 -->
+    <header class="page-hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>🌍 中亚跨境机械设备租售项目</h1>
+                <p>一站式管理中哈、中乌等跨境设备租赁业务的投标测算、成本核算与利润分析</p>
+            </div>
+            <div class="hero-stats" id="heroStats">
+                <!-- 动态生成项目分类统计 -->
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 工具栏 -->
+        <!-- 快速统计区 -->
+        <div class="stats-row" id="statsRow">
+            <!-- 动态生成统计卡片 -->
+        </div>
+
+        <!-- 快速筛选标签 -->
+        <div class="quick-filters" id="quickFilters">
+            <button class="quick-filter-btn active" data-filter="all" onclick="quickFilter('all')">
+                全部项目 <span class="count" id="countAll">0</span>
+            </button>
+            <button class="quick-filter-btn" data-filter="跟进中" onclick="quickFilter('跟进中')">
+                🔵 跟进中 <span class="count" id="count跟进中">0</span>
+            </button>
+            <button class="quick-filter-btn" data-filter="执行中" onclick="quickFilter('执行中')">
+                🟢 执行中 <span class="count" id="count执行中">0</span>
+            </button>
+            <button class="quick-filter-btn" data-filter="pass" onclick="quickFilter('pass')">
+                ✅ 达标项目 <span class="count" id="countPass">0</span>
+            </button>
+            <button class="quick-filter-btn" data-filter="risk" onclick="quickFilter('risk')">
+                ⚠️ 风险项目 <span class="count" id="countRisk">0</span>
+            </button>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <button class="btn btn-primary btn-lg" onclick="openCreateModal()">
+                    <span class="btn-icon">➕</span>
+                    <span>新建项目</span>
+                </button>
+                <!-- 视图切换 -->
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="card" onclick="switchView('card')" title="卡片视图">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <rect x="1" y="1" width="6" height="6" rx="1"/>
+                            <rect x="9" y="1" width="6" height="6" rx="1"/>
+                            <rect x="1" y="9" width="6" height="6" rx="1"/>
+                            <rect x="9" y="9" width="6" height="6" rx="1"/>
+                        </svg>
+                    </button>
+                    <button class="view-btn" data-view="table" onclick="switchView('table')" title="表格视图">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <rect x="1" y="1" width="14" height="3" rx="0.5"/>
+                            <rect x="1" y="6" width="14" height="3" rx="0.5"/>
+                            <rect x="1" y="11" width="14" height="3" rx="0.5"/>
+                        </svg>
+                    </button>
+                </div>
+                <!-- 高级筛选按钮 -->
+                <button class="btn btn-secondary" onclick="toggleAdvancedFilter()">
+                    🎛️ 高级筛选
+                </button>
+            </div>
+            <div class="toolbar-right">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="搜索项目名称、客户、区域...">
+                </div>
+                <select id="filterRegion" class="filter-select">
+                    <option value="all">🌍 所有区域</option>
+                    <option value="哈萨克斯坦">🇰🇿 哈萨克斯坦</option>
+                    <option value="乌兹别克斯坦">🇺🇿 乌兹别克斯坦</option>
+                    <option value="吉尔吉斯斯坦">🇰🇬 吉尔吉斯斯坦</option>
+                    <option value="塔吉克斯坦">🇹🇯 塔吉克斯坦</option>
+                    <option value="土库曼斯坦">🇹🇲 土库曼斯坦</option>
+                </select>
+                <!-- 列配置按钮 -->
+                <button class="btn btn-secondary" onclick="openColumnConfig()" title="配置列">
+                    ⚙️ 列配置
+                </button>
+                <!-- 导出按钮 -->
+                <button class="btn btn-secondary" onclick="exportProjects()">
+                    📥 导出
+                </button>
+            </div>
+        </div>
+
+        <!-- 高级筛选面板 -->
+        <div class="advanced-filter-panel" id="advancedFilterPanel">
+            <div class="filter-panel-header">
+                <h4>🎛️ 高级筛选</h4>
+                <div class="filter-panel-actions">
+                    <button class="btn btn-text" onclick="clearAllFilters()">清除筛选</button>
+                    <button class="btn btn-primary btn-sm" onclick="applyAdvancedFilter()">应用筛选</button>
+                </div>
+            </div>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label>项目状态</label>
+                    <select id="filterStatus">
+                        <option value="all">全部状态</option>
+                        <option value="跟进中">跟进中</option>
+                        <option value="投标中">投标中</option>
+                        <option value="签约">签约</option>
+                        <option value="执行中">执行中</option>
+                        <option value="已完成">已完成</option>
+                        <option value="已终止">已终止</option>
+                        <option value="已归档">已归档</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>项目类型</label>
+                    <select id="filterType">
+                        <option value="all">全部类型</option>
+                        <option value="设备租赁">设备租赁</option>
+                        <option value="设备出售">设备出售</option>
+                        <option value="租售结合">租售结合</option>
+                        <option value="工程承包">工程承包</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>GM1毛利率</label>
+                    <select id="filterGM1">
+                        <option value="all">不限</option>
+                        <option value="pass">≥30% (达标)</option>
+                        <option value="warning">20%-30% (预警)</option>
+                        <option value="fail">&lt;20% (不达标)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>回本周期</label>
+                    <select id="filterPB1">
+                        <option value="all">不限</option>
+                        <option value="pass">≤24月 (达标)</option>
+                        <option value="warning">24-36月 (预警)</option>
+                        <option value="fail">&gt;36月 (不达标)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>创建时间</label>
+                    <select id="filterDateRange">
+                        <option value="all">全部时间</option>
+                        <option value="today">今天</option>
+                        <option value="week">最近7天</option>
+                        <option value="month">最近30天</option>
+                        <option value="quarter">最近3个月</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>设备价值</label>
+                    <select id="filterValue">
+                        <option value="all">不限</option>
+                        <option value="small">&lt;100万</option>
+                        <option value="medium">100-500万</option>
+                        <option value="large">&gt;500万</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 活跃筛选标签 -->
+        <div class="active-filters" id="activeFilters"></div>
+
+        <!-- 项目卡片网格 -->
+        <div class="projects-grid" id="projectsGrid">
+            <!-- 动态填充 -->
+        </div>
+        
+        <!-- 项目表格视图 (飞书风格) -->
+        <div class="feishu-table-container" id="projectsTable" style="display:none;">
+            <table class="feishu-table">
+                <thead id="tableHead">
+                    <!-- 动态生成表头 -->
+                </thead>
+                <tbody id="tableBody">
+                    <!-- 动态生成表格内容 -->
+                </tbody>
+            </table>
+            <!-- 分页控件 -->
+            <div class="pagination-controls">
+                <!-- 动态生成分页 -->
+            </div>
+        </div>
+
+        <!-- 空状态 -->
+        <div class="empty-state" id="emptyState" style="display:none;">
+            <div class="empty-state-icon">📭</div>
+            <h3>暂无项目</h3>
+            <p>点击"新建项目"开始创建您的第一个跨境设备租售项目</p>
+            <button class="btn btn-primary btn-lg" onclick="openCreateModal()">
+                ➕ 新建项目
+            </button>
+        </div>
+
+        <!-- 分页 (卡片视图) -->
+        <div class="pagination" id="pagination">
+            <div class="pagination-info" id="paginationInfo">共 0 个项目</div>
+            <div class="pagination-controls" id="paginationControls"></div>
+        </div>
+    </main>
+
+    <!-- 批量操作栏 -->
+    <div class="batch-action-bar" id="batchActionBar">
+        <div class="batch-info">
+            <span class="batch-count">已选择 <strong id="selectedCount">0</strong> 个项目</span>
+            <button class="btn btn-text" onclick="clearSelection()">取消选择</button>
+        </div>
+        <div class="batch-actions">
+            <button class="batch-btn" onclick="batchUpdateStatus()">📝 批量更新状态</button>
+            <button class="batch-btn" onclick="batchExport()">📥 批量导出</button>
+            <button class="batch-btn" onclick="batchCalc()">🧮 批量测算</button>
+            <button class="batch-btn danger" onclick="batchArchive()">📦 批量归档</button>
+        </div>
+    </div>
+
+    <!-- 列配置侧边栏 -->
+    <div class="overlay" id="columnConfigOverlay" onclick="closeColumnConfig()"></div>
+    <div class="column-config-panel" id="columnConfigPanel">
+        <div class="column-config-header">
+            <h3>⚙️ 配置显示列</h3>
+            <button class="column-config-close" onclick="closeColumnConfig()">&times;</button>
+        </div>
+        <div class="column-config-body">
+            <div class="column-group">
+                <div class="column-group-title">基本信息</div>
+                <div id="columnListBasic"></div>
+            </div>
+            <div class="column-group">
+                <div class="column-group-title">财务指标</div>
+                <div id="columnListFinance"></div>
+            </div>
+            <div class="column-group">
+                <div class="column-group-title">其他</div>
+                <div id="columnListOther"></div>
+            </div>
+        </div>
+        <div class="column-config-footer">
+            <button class="btn btn-text" onclick="resetColumnConfig()">恢复默认</button>
+            <button class="btn btn-primary" onclick="saveColumnConfig()">保存配置</button>
+        </div>
+    </div>
+
+    <!-- 底部状态栏 -->
+    <footer class="footer-bar">
+        <div class="footer-left">
+            <span>📊 当前显示 <strong id="projectCount">0</strong> 个项目</span>
+        </div>
+        <div class="footer-right">
+            <span class="db-status">💾 数据已保存至本地 IndexedDB</span>
+        </div>
+    </footer>
+
+    <!-- 字段管理弹窗 -->
+    <div class="modal-overlay" id="fieldManagerModal">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3>⚙️ 字段管理</h3>
+                <button class="modal-close" onclick="closeModal('fieldManagerModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="field-manager-hint">拖拽排序，勾选显示/隐藏字段</p>
+                <div class="field-list" id="fieldList">
+                    <!-- 动态生成字段列表 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="resetFields()">恢复默认</button>
+                <button class="btn btn-primary" onclick="applyFields()">应用</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建项目弹窗 -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3>📝 新建跨境租赁项目</h3>
+                <button class="modal-close" onclick="closeModal('createModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h4>📋 基本信息</h4>
+                    <div class="form-group">
+                        <label class="form-label required">项目名称</label>
+                        <input type="text" id="projectName" class="form-input" placeholder="例如：哈萨克斯坦阿斯塔纳挖掘机租赁项目">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required">目标国家</label>
+                            <select id="projectRegion" class="form-input" onchange="updateCityOptions()">
+                                <option value="哈萨克斯坦">🇰🇿 哈萨克斯坦</option>
+                                <option value="乌兹别克斯坦">🇺🇿 乌兹别克斯坦</option>
+                                <option value="吉尔吉斯斯坦">🇰🇬 吉尔吉斯斯坦</option>
+                                <option value="塔吉克斯坦">🇹🇯 塔吉克斯坦</option>
+                                <option value="土库曼斯坦">🇹🇲 土库曼斯坦</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required">目标城市</label>
+                            <select id="projectCity" class="form-input">
+                                <option value="阿拉木图">阿拉木图</option>
+                                <option value="阿斯塔纳">阿斯塔纳(努尔苏丹)</option>
+                                <option value="奇姆肯特">奇姆肯特</option>
+                                <option value="阿克套">阿克套</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">业务类型</label>
+                            <select id="projectType" class="form-input">
+                                <option value="设备租赁">📦 设备租赁</option>
+                                <option value="设备出售">🏷️ 设备出售</option>
+                                <option value="租售结合">🔄 租售结合</option>
+                                <option value="工程承包">🏗️ 工程承包</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">客户名称</label>
+                            <input type="text" id="projectCustomer" class="form-input" placeholder="例如：哈萨克斯坦国家铁路公司">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h4>🚜 设备信息</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">设备类型</label>
+                            <select id="equipmentType" class="form-input">
+                                <option value="挖掘机">🚜 挖掘机</option>
+                                <option value="推土机">🚧 推土机</option>
+                                <option value="装载机">📦 装载机</option>
+                                <option value="压路机">🛞 压路机</option>
+                                <option value="起重机">🏗️ 起重机</option>
+                                <option value="塔吊">🗼 塔吊</option>
+                                <option value="叉车">🏭 叉车</option>
+                                <option value="其他">📋 其他</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">设备型号</label>
+                            <input type="text" id="equipmentModel" class="form-input" placeholder="例如：CAT336">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">数量（台）</label>
+                            <input type="number" id="equipmentQty" class="form-input" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">单价（万元）</label>
+                            <input type="number" id="equipmentPrice" class="form-input" value="80" min="1" step="0.1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="closeModal('createModal')">取消</button>
+                <button class="btn btn-secondary" onclick="createAndEdit()">创建并编辑详情</button>
+                <button class="btn btn-primary" onclick="createProject()">快速创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 项目详情预览弹窗 -->
+    <div class="modal-overlay" id="projectDetailModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 id="detailProjectName">项目详情</h3>
+                <button class="modal-close" onclick="closeModal('projectDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-summary">
+                    <div class="detail-meta" id="detailMeta">
+                        <span class="meta-item">🆔 ID: <strong id="detailId">--</strong></span>
+                        <span class="meta-item">🌍 区域: <strong id="detailRegion">--</strong></span>
+                        <span class="meta-item">📅 创建: <strong id="detailCreated">--</strong></span>
+                        <span class="meta-item">🔄 更新: <strong id="detailUpdated">--</strong></span>
+                    </div>
+                </div>
+                
+                <div class="detail-grid">
+                    <div class="detail-section">
+                        <h4>📦 设备信息</h4>
+                        <div class="detail-table">
+                            <div class="detail-row">
+                                <span class="detail-label">设备类型</span>
+                                <span class="detail-value" id="detailEquipType">--</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">设备型号</span>
+                                <span class="detail-value" id="detailEquipModel">--</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">数量</span>
+                                <span class="detail-value" id="detailQuantity">--</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">单价</span>
+                                <span class="detail-value" id="detailUnitPrice">--</span>
+                            </div>
+                            <div class="detail-row highlight">
+                                <span class="detail-label">设备总值</span>
+                                <span class="detail-value" id="detailTotalValue">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>💰 收入配置</h4>
+                        <div class="detail-table">
+                            <div class="detail-row">
+                                <span class="detail-label">月租金</span>
+                                <span class="detail-value" id="detailMonthlyRent">--</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">租期</span>
+                                <span class="detail-value" id="detailLeaseTerm">--</span>
+                            </div>
+                            <div class="detail-row highlight">
+                                <span class="detail-label">租期总收入</span>
+                                <span class="detail-value" id="detailTotalRent">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>📊 测算结果</h4>
+                        <div class="detail-kpi-grid">
+                            <div class="detail-kpi">
+                                <span class="kpi-value" id="detailGM1">--</span>
+                                <span class="kpi-label">GM1 毛利率</span>
+                            </div>
+                            <div class="detail-kpi">
+                                <span class="kpi-value" id="detailGM2">--</span>
+                                <span class="kpi-label">GM2 毛利率</span>
+                            </div>
+                            <div class="detail-kpi">
+                                <span class="kpi-value" id="detailPB1">--</span>
+                                <span class="kpi-label">项目回本</span>
+                            </div>
+                            <div class="detail-kpi">
+                                <span class="kpi-value" id="detailPB2">--</span>
+                                <span class="kpi-label">股东回本</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>📈 财务摘要</h4>
+                        <div class="detail-table">
+                            <div class="detail-row">
+                                <span class="detail-label">预计总收入</span>
+                                <span class="detail-value" id="detailTotalRevenue">--</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">预计总成本</span>
+                                <span class="detail-value" id="detailTotalCost">--</span>
+                            </div>
+                            <div class="detail-row highlight">
+                                <span class="detail-label">净现金流</span>
+                                <span class="detail-value" id="detailNetCashflow">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="closeModal('projectDetailModal')">关闭</button>
+                <button class="btn btn-secondary" onclick="duplicateCurrentProject()">📋 复制项目</button>
+                <button class="btn btn-primary" onclick="editCurrentProject()">📝 编辑详情</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 容器 -->
+    <div class="toast-container"></div>
+
+    <!-- 脚本 -->
+    <script src="db.js"></script>
+    <script src="list.js"></script>
+    <script src="ai-assistant.js"></script>
+</body>
+</html>

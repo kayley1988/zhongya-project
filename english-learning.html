@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语学习 - 金哲工程机械</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h1 { color: #333; }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        .vocab-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .vocab-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+        }
+        .vocab-card .english { font-size: 20px; color: #333; margin-bottom: 5px; }
+        .vocab-card .chinese { font-size: 16px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇬🇧 英语学习 - 商务与技术英语</h1>
+            <a href="./main.html" class="back-btn">← 返回主页</a>
+        </div>
+        
+        <div class="vocab-list">
+            <div class="vocab-card">
+                <div class="english">Letter of Credit (L/C)</div>
+                <div class="chinese">信用证</div>
+            </div>
+            <div class="vocab-card">
+                <div class="english">Bill of Lading (B/L)</div>
+                <div class="chinese">提单</div>
+            </div>
+            <div class="vocab-card">
+                <div class="english">FOB (Free On Board)</div>
+                <div class="chinese">离岸价</div>
+            </div>
+            <div class="vocab-card">
+                <div class="english">CIF (Cost, Insurance, Freight)</div>
+                <div class="chinese">到岸价</div>
+            </div>
+            <div class="vocab-card">
+                <div class="english">Proforma Invoice</div>
+                <div class="chinese">形式发票</div>
+            </div>
+            <div class="vocab-card">
+                <div class="english">Certificate of Origin</div>
+                <div class="chinese">原产地证书</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

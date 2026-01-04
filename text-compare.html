@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多文本对比 - 金哲工程机械</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .header h1 { color: #333; font-size: 28px; }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        
+        .compare-panels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .panel {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .panel-header {
+            background: #f8f9fa;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-header.zh { border-left: 4px solid #e74c3c; }
+        .panel-header.en { border-left: 4px solid #3498db; }
+        .panel-header.ru { border-left: 4px solid #9b59b6; }
+        
+        .panel-content {
+            padding: 20px;
+            min-height: 300px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .highlight-diff { background: #fff3cd; padding: 2px 4px; border-radius: 3px; }
+        .highlight-term { background: #d4edda; padding: 2px 4px; border-radius: 3px; cursor: help; }
+        
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-secondary { background: #f0f0f0; color: #666; }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            font-size: 13px;
+            color: #666;
+        }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 多文本对比</h1>
+            <a href="./main.html" class="back-btn">← 返回主页</a>
+        </div>
+        
+        <div class="toolbar">
+            <button class="btn btn-primary">📂 上传文件</button>
+            <button class="btn btn-secondary">📋 从合同库选择</button>
+            <button class="btn btn-secondary">🔍 术语校验</button>
+            <button class="btn btn-secondary">📥 导出报告</button>
+        </div>
+        
+        <div class="compare-panels">
+            <div class="panel">
+                <div class="panel-header zh">🇨🇳 中文版本</div>
+                <div class="panel-content">
+                    <p>甲方同意向乙方出售以下<span class="highlight-term" title="Construction Machinery / Строительная техника">工程机械</span>设备：</p>
+                    <p>1. 设备名称：<span class="highlight-term" title="Crawler Crane / Гусеничный кран">履带起重机</span></p>
+                    <p>2. 型号规格：XGC88000</p>
+                    <p>3. <span class="highlight-diff">合同金额</span>：人民币伍佰万元整</p>
+                    <p>4. 交货地点：哈萨克斯坦阿拉木图</p>
+                    <p>5. 质保期限：<span class="highlight-diff">12个月</span></p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header en">🇬🇧 English Version</div>
+                <div class="panel-content">
+                    <p>Party A agrees to sell the following <span class="highlight-term">construction machinery</span> to Party B:</p>
+                    <p>1. Equipment: <span class="highlight-term">Crawler Crane</span></p>
+                    <p>2. Model: XGC88000</p>
+                    <p>3. <span class="highlight-diff">Contract Value</span>: USD 700,000</p>
+                    <p>4. Delivery: Almaty, Kazakhstan</p>
+                    <p>5. Warranty: <span class="highlight-diff">18 months</span></p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header ru">🇷🇺 Русская версия</div>
+                <div class="panel-content">
+                    <p>Сторона А соглашается продать следующую <span class="highlight-term">строительную технику</span> Стороне Б:</p>
+                    <p>1. Оборудование: <span class="highlight-term">Гусеничный кран</span></p>
+                    <p>2. Модель: XGC88000</p>
+                    <p>3. <span class="highlight-diff">Сумма контракта</span>: 700 000 долларов США</p>
+                    <p>4. Доставка: Алматы, Казахстан</p>
+                    <p>5. Гарантия: <span class="highlight-diff">18 месяцев</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #fff3cd;"></div>
+                <span>差异内容（需人工确认）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #d4edda;"></div>
+                <span>专业术语（可查看翻译）</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

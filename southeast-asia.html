@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>东南亚市场 - 金哲工程机械</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .header h1 { color: #333; font-size: 28px; }
+        .back-btn {
+            background: #11998e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        
+        .countries {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .country-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .country-card:hover { border-color: #11998e; transform: translateY(-3px); }
+        .country-card .flag { font-size: 48px; margin-bottom: 10px; }
+        .country-card h4 { color: #333; font-size: 16px; margin-bottom: 5px; }
+        .country-card p { color: #666; font-size: 12px; }
+        
+        .market-info {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .market-info h3 { margin-bottom: 20px; }
+        .market-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .stat-item { text-align: center; }
+        .stat-item .number { font-size: 32px; font-weight: bold; }
+        .stat-item .label { font-size: 14px; opacity: 0.9; }
+        
+        .coming-soon {
+            text-align: center;
+            padding: 40px;
+            background: #fff3cd;
+            border-radius: 12px;
+        }
+        .coming-soon h3 { color: #856404; margin-bottom: 10px; }
+        .coming-soon p { color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇹🇭 东南亚市场</h1>
+            <a href="./main.html" class="back-btn">← 返回主页</a>
+        </div>
+        
+        <div class="countries">
+            <div class="country-card">
+                <div class="flag">🇹🇭</div>
+                <h4>泰国</h4>
+                <p>Thailand</p>
+            </div>
+            <div class="country-card">
+                <div class="flag">🇻🇳</div>
+                <h4>越南</h4>
+                <p>Vietnam</p>
+            </div>
+            <div class="country-card">
+                <div class="flag">🇮🇩</div>
+                <h4>印度尼西亚</h4>
+                <p>Indonesia</p>
+            </div>
+            <div class="country-card">
+                <div class="flag">🇲🇾</div>
+                <h4>马来西亚</h4>
+                <p>Malaysia</p>
+            </div>
+            <div class="country-card">
+                <div class="flag">🇵🇭</div>
+                <h4>菲律宾</h4>
+                <p>Philippines</p>
+            </div>
+            <div class="country-card">
+                <div class="flag">🇸🇬</div>
+                <h4>新加坡</h4>
+                <p>Singapore</p>
+            </div>
+        </div>
+        
+        <div class="market-info">
+            <h3>📊 东南亚市场概览</h3>
+            <div class="market-stats">
+                <div class="stat-item">
+                    <div class="number">6.8亿</div>
+                    <div class="label">总人口</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">$3.6万亿</div>
+                    <div class="label">GDP总量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">5.2%</div>
+                    <div class="label">平均增速</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">$850亿</div>
+                    <div class="label">工程机械市场</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="coming-soon">
+            <h3>🚧 功能开发中</h3>
+            <p>东南亚市场模块正在开发中，敬请期待...</p>
+        </div>
+    </div>
+</body>
+</html>

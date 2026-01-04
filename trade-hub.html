@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跨境贸易区 - 金哲工程机械</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-breadcrumb {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-breadcrumb a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-breadcrumb span {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(56,239,125,0.1) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.5s;
+        }
+
+        .card:hover::after {
+            transform: scale(1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+        }
+
+        .card-icon {
+            font-size: 64px;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .card-desc {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .card-features {
+            margin-bottom: 20px;
+        }
+
+        .feature-item {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .feature-item::before {
+            content: '🌟';
+            position: absolute;
+            left: 0;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .card.featured {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .card.featured .card-title {
+            color: white;
+        }
+
+        .card.featured .card-desc {
+            color: rgba(255,255,255,0.95);
+        }
+
+        .card.featured .feature-item {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .card.featured .tag {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            color: #11998e;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .back-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-breadcrumb">
+            <a href="./main.html">🏠 主页</a>
+            <span>›</span>
+            <span style="color: white; font-weight: bold;">🌐 跨境贸易区</span>
+        </div>
+
+        <div class="header">
+            <h1>🌐 跨境贸易区</h1>
+            <p>Cross-Border Trade Hub - 全球市场拓展与分析</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <div class="stat-label">区域市场</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">10+</div>
+                <div class="stat-label">覆盖国家</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">支持语种</div>
+            </div>
+        </div>
+
+        <div class="cards">
+            <a href="./data.html" class="card featured">
+                <div class="card-icon">🇰🇿</div>
+                <div class="card-title">中亚市场</div>
+                <div class="card-desc">哈萨克斯坦、乌兹别克斯坦、土库曼斯坦、吉尔吉斯斯坦、塔吉克斯坦五国市场深度分析与价格查询</div>
+                <div class="card-features">
+                    <div class="feature-item">中亚五国市场实时价格监控</div>
+                    <div class="feature-item">多语种智能翻译（俄语/哈萨克语/乌兹别克语）</div>
+                    <div class="feature-item">AI价格分析与趋势预测</div>
+                    <div class="feature-item">本地化商务信息与政策解读</div>
+                    <div class="feature-item">跨境贸易风险评估</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">价格分析</span>
+                    <span class="tag">多语种</span>
+                    <span class="tag">AI助手</span>
+                    <span class="tag">主推市场</span>
+                </div>
+            </a>
+
+            <a href="./southeast-asia.html" class="card">
+                <div class="card-icon">🇹🇭</div>
+                <div class="card-title">东南亚市场</div>
+                <div class="card-desc">泰国、越南、印度尼西亚等东南亚国家市场拓展与分析工具</div>
+                <div class="card-features">
+                    <div class="feature-item">东南亚主要市场动态追踪</div>
+                    <div class="feature-item">本地化需求分析与报告</div>
+                    <div class="feature-item">竞争对手情报收集</div>
+                    <div class="feature-item">文化差异与商务礼仪指南</div>
+                    <div class="feature-item">区域物流与关税查询</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">市场分析</span>
+                    <span class="tag">本地化</span>
+                    <span class="tag">物流查询</span>
+                    <span class="tag">拓展中</span>
+                </div>
+            </a>
+        </div>
+
+        <a href="./main.html" class="back-btn">← 返回主页</a>
+    </div>
+</body>
+</html>

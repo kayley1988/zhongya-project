@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统设置 - 中亚跨境项目管理</title>
+    <link rel="stylesheet" href="list.css">
+    <style>
+        .settings-container {
+            width: 100%;
+            padding: 32px;
+        }
+        
+        /* 设置页面 Hero */
+        .settings-hero {
+            background: linear-gradient(135deg, #312e81 0%, #4338ca 50%, #6366f1 100%);
+            margin: -32px -32px 32px -32px;
+            padding: 48px 32px;
+            color: white;
+        }
+        
+        .settings-hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+        
+        .settings-hero p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        /* 设置网格布局 */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 24px;
+        }
+        
+        .settings-section {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-section:hover {
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-color);
+        }
+        
+        .section-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .section-header .section-icon {
+            font-size: 1.25rem;
+        }
+        
+        .section-body {
+            padding: 24px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .setting-item:first-child {
+            padding-top: 0;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .setting-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .setting-input {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            width: 160px;
+            text-align: right;
+        }
+        
+        .setting-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .setting-select {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            min-width: 160px;
+            background: var(--card-bg);
+            cursor: pointer;
+        }
+        
+        .setting-unit {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            min-width: 40px;
+        }
+        
+        /* 开关样式 */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+        
+        /* 危险区域 */
+        .danger-zone {
+            border: 1px solid var(--danger-color);
+        }
+        
+        .danger-zone .section-header {
+            background: var(--danger-light);
+            border-bottom-color: var(--danger-color);
+        }
+        
+        .danger-zone .section-header h2 {
+            color: var(--danger-color);
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        /* 保存栏 */
+        .save-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            z-index: 100;
+        }
+        
+        .version-info {
+            margin-top: 32px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding-bottom: 80px;
+        }
+        
+        .version-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">中亚跨境设备租售管理</span>
+            </div>
+            <div class="nav-tabs">
+                <a href="list.html" class="nav-tab">📋 项目列表</a>
+                <a href="pricing.html" class="nav-tab">💰 定价测算</a>
+                <a href="fx.html" class="nav-tab">💱 汇率管理</a>
+                <a href="data.html" class="nav-tab">🗄️ 数据中心</a>
+                <a href="settings.html" class="nav-tab active">⚙️ 系统设置</a>
+            </div>
+        </div>
+        <div class="nav-right">
+        </div>
+    </nav>
+
+    <!-- 设置内容 -->
+    <div class="settings-container">
+        <!-- 设置页面 Hero -->
+        <div class="settings-hero">
+            <h1>⚙️ 系统设置</h1>
+            <p>管理系统默认参数、阈值配置和数据存储</p>
+        </div>
+        
+        <!-- 设置网格 -->
+        <div class="settings-grid">
+        
+        <!-- KPI 达标阈值 -->
+        <div class="settings-section">
+            <div class="section-header">
+                <span class="section-icon">📊</span>
+                <h2>KPI 达标阈值</h2>
+            </div>
+            <div class="section-body">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">GM1 经营毛利率阈值</div>
+                        <div class="setting-desc">项目经营毛利率达标标准，低于此值标记为不达标</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="thresholdGm1" value="30" min="0" max="100" step="1">
+                        <span class="setting-unit">%</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">GM2 含摊销毛利率阈值</div>
+                        <div class="setting-desc">含设备摊销的毛利率达标标准</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="thresholdGm2" value="20" min="0" max="100" step="1">
+                        <span class="setting-unit">%</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">GM3 全口径毛利率阈值</div>
+                        <div class="setting-desc">包含资金成本的综合毛利率达标标准</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="thresholdGm3" value="15" min="0" max="100" step="1">
+                        <span class="setting-unit">%</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">PB1 项目回本期限</div>
+                        <div class="setting-desc">项目现金流回正的最大允许月数</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="thresholdPb1" value="24" min="1" max="120" step="1">
+                        <span class="setting-unit">月</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">PB2 股东回本期限</div>
+                        <div class="setting-desc">股东实际投入资金回收的最大允许月数</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="thresholdPb2" value="18" min="1" max="120" step="1">
+                        <span class="setting-unit">月</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 默认汇率设置 -->
+        <div class="settings-section">
+            <div class="section-header">
+                <span class="section-icon">💱</span>
+                <h2>默认汇率配置</h2>
+            </div>
+            <div class="section-body">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">CNY/KZT 基准汇率</div>
+                        <div class="setting-desc">人民币兑哈萨克斯坦坚戈的默认汇率</div>
+                    </div>
+                    <div class="setting-control">
+                        <span class="setting-unit">1 CNY =</span>
+                        <input type="number" class="setting-input" id="rateKzt" value="65" min="1" step="0.1">
+                        <span class="setting-unit">KZT</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">CNY/UZS 基准汇率</div>
+                        <div class="setting-desc">人民币兑乌兹别克斯坦苏姆的默认汇率</div>
+                    </div>
+                    <div class="setting-control">
+                        <span class="setting-unit">1 CNY =</span>
+                        <input type="number" class="setting-input" id="rateUzs" value="1750" min="1" step="1">
+                        <span class="setting-unit">UZS</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">汇率波动预估</div>
+                        <div class="setting-desc">用于情景分析的汇率波动幅度</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="fxVolatility" value="5" min="0" max="50" step="0.5">
+                        <span class="setting-unit">%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 默认税费规则 -->
+        <div class="settings-section">
+            <div class="section-header">
+                <span class="section-icon">📋</span>
+                <h2>默认税费规则</h2>
+            </div>
+            <div class="section-body">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">哈萨克斯坦关税率</div>
+                        <div class="setting-desc">机械设备进口哈萨克斯坦的默认关税率</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="tariffKz" value="5" min="0" max="100" step="0.1">
+                        <span class="setting-unit">%</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">哈萨克斯坦 VAT 税率</div>
+                        <div class="setting-desc">哈萨克斯坦增值税默认税率</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="vatKz" value="12" min="0" max="100" step="0.1">
+                        <span class="setting-unit">%</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">乌兹别克斯坦关税率</div>
+                        <div class="setting-desc">机械设备进口乌兹别克斯坦的默认关税率</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="tariffUz" value="8" min="0" max="100" step="0.1">
+                        <span class="setting-unit">%</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">乌兹别克斯坦 VAT 税率</div>
+                        <div class="setting-desc">乌兹别克斯坦增值税默认税率</div>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" class="setting-input" id="vatUz" value="15" min="0" max="100" step="0.1">
+                        <span class="setting-unit">%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 界面设置 -->
+        <div class="settings-section">
+            <div class="section-header">
+                <span class="section-icon">🎨</span>
+                <h2>界面与显示</h2>
+            </div>
+            <div class="section-body">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">默认币种显示</div>
+                        <div class="setting-desc">报表和图表默认显示的币种</div>
+                    </div>
+                    <div class="setting-control">
+                        <select class="setting-select" id="defaultCurrency">
+                            <option value="CNY">人民币 (CNY)</option>
+                            <option value="KZT">坚戈 (KZT)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">项目列表每页显示</div>
+                        <div class="setting-desc">项目列表页面每页显示的项目数量</div>
+                    </div>
+                    <div class="setting-control">
+                        <select class="setting-select" id="pageSize">
+                            <option value="6">6 个</option>
+                            <option value="12" selected>12 个</option>
+                            <option value="24">24 个</option>
+                            <option value="48">48 个</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">自动保存</div>
+                        <div class="setting-desc">编辑项目时自动保存更改</div>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoSave" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-label">显示调试信息</div>
+                        <div class="setting-desc">在控制台输出详细的计算过程</div>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="debugMode">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </div><!-- 关闭 settings-grid -->
+        
+        <!-- 危险区域 - 全宽显示 -->
+        <div class="settings-section danger-zone" style="margin-top: 24px;">
+            <div class="section-header">
+                <span class="section-icon">⚠️</span>
+                <h2>危险区域</h2>
+            </div>
+            <div class="section-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                    <div class="setting-item" style="border: none; padding: 0;">
+                        <div class="setting-info">
+                            <div class="setting-label">重置示例数据</div>
+                            <div class="setting-desc">清除所有项目数据并重新生成示例项目</div>
+                        </div>
+                        <div class="setting-control">
+                            <button class="btn btn-secondary" onclick="resetSampleData()">🔃 重置数据</button>
+                        </div>
+                    </div>
+                    <div class="setting-item" style="border: none; padding: 0;">
+                        <div class="setting-info">
+                            <div class="setting-label">清空所有数据</div>
+                            <div class="setting-desc">永久删除所有项目、测算记录和配置（不可恢复）</div>
+                        </div>
+                        <div class="setting-control">
+                            <button class="btn btn-danger" onclick="clearAllData()">🗑️ 清空数据</button>
+                        </div>
+                    </div>
+                    <div class="setting-item" style="border: none; padding: 0;">
+                        <div class="setting-info">
+                            <div class="setting-label">导出数据备份</div>
+                            <div class="setting-desc">将所有数据导出为 JSON 文件进行备份</div>
+                        </div>
+                        <div class="setting-control">
+                            <button class="btn btn-secondary" onclick="exportData()">📥 导出备份</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="version-info">
+            <p>中亚跨境机械设备租售测算系统 v2.0</p>
+            <p>数据存储于浏览器本地 IndexedDB | 
+               <a href="list.html">返回项目列表</a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- 保存栏 -->
+    <div class="save-bar">
+        <button class="btn btn-text" onclick="resetSettings()">恢复默认</button>
+        <button class="btn btn-primary" onclick="saveSettings()">💾 保存设置</button>
+    </div>
+    
+    <!-- Toast 容器 -->
+    <div class="toast-container"></div>
+
+    <script src="db.js"></script>
+    <script>
+        // 页面加载时读取设置
+        document.addEventListener('DOMContentLoaded', async () => {
+            await db.ready;
+            await loadSettings();
+        });
+        
+        // 加载设置
+        async function loadSettings() {
+            try {
+                const settings = await db.getSettings();
+                if (settings) {
+                    // KPI 阈值
+                    if (settings.thresholds) {
+                        document.getElementById('thresholdGm1').value = (settings.thresholds.gm1 || 0.30) * 100;
+                        document.getElementById('thresholdGm2').value = (settings.thresholds.gm2 || 0.20) * 100;
+                        document.getElementById('thresholdGm3').value = (settings.thresholds.gm3 || 0.15) * 100;
+                        document.getElementById('thresholdPb1').value = settings.thresholds.pb1 || 24;
+                        document.getElementById('thresholdPb2').value = settings.thresholds.pb2 || 18;
+                    }
+                    
+                    // 汇率
+                    if (settings.fxRates) {
+                        document.getElementById('rateKzt').value = settings.fxRates.kzt || 65;
+                        document.getElementById('rateUzs').value = settings.fxRates.uzs || 1750;
+                        document.getElementById('fxVolatility').value = (settings.fxRates.volatility || 0.05) * 100;
+                    }
+                    
+                    // 税费
+                    if (settings.taxRules) {
+                        document.getElementById('tariffKz').value = (settings.taxRules.tariffKz || 0.05) * 100;
+                        document.getElementById('vatKz').value = (settings.taxRules.vatKz || 0.12) * 100;
+                        document.getElementById('tariffUz').value = (settings.taxRules.tariffUz || 0.08) * 100;
+                        document.getElementById('vatUz').value = (settings.taxRules.vatUz || 0.15) * 100;
+                    }
+                    
+                    // 界面
+                    if (settings.ui) {
+                        document.getElementById('defaultCurrency').value = settings.ui.defaultCurrency || 'CNY';
+                        document.getElementById('pageSize').value = settings.ui.pageSize || 12;
+                        document.getElementById('autoSave').checked = settings.ui.autoSave !== false;
+                        document.getElementById('debugMode').checked = settings.ui.debugMode || false;
+                    }
+                }
+            } catch (error) {
+                console.error('加载设置失败:', error);
+            }
+        }
+        
+        // 保存设置
+        async function saveSettings() {
+            const settings = {
+                thresholds: {
+                    gm1: parseFloat(document.getElementById('thresholdGm1').value) / 100,
+                    gm2: parseFloat(document.getElementById('thresholdGm2').value) / 100,
+                    gm3: parseFloat(document.getElementById('thresholdGm3').value) / 100,
+                    pb1: parseInt(document.getElementById('thresholdPb1').value),
+                    pb2: parseInt(document.getElementById('thresholdPb2').value)
+                },
+                fxRates: {
+                    kzt: parseFloat(document.getElementById('rateKzt').value),
+                    uzs: parseFloat(document.getElementById('rateUzs').value),
+                    volatility: parseFloat(document.getElementById('fxVolatility').value) / 100
+                },
+                taxRules: {
+                    tariffKz: parseFloat(document.getElementById('tariffKz').value) / 100,
+                    vatKz: parseFloat(document.getElementById('vatKz').value) / 100,
+                    tariffUz: parseFloat(document.getElementById('tariffUz').value) / 100,
+                    vatUz: parseFloat(document.getElementById('vatUz').value) / 100
+                },
+                ui: {
+                    defaultCurrency: document.getElementById('defaultCurrency').value,
+                    pageSize: parseInt(document.getElementById('pageSize').value),
+                    autoSave: document.getElementById('autoSave').checked,
+                    debugMode: document.getElementById('debugMode').checked
+                }
+            };
+            
+            try {
+                await db.saveSettings(settings);
+                showToast('设置已保存', 'success');
+            } catch (error) {
+                showToast('保存失败：' + error.message, 'error');
+            }
+        }
+        
+        // 恢复默认设置
+        function resetSettings() {
+            document.getElementById('thresholdGm1').value = 30;
+            document.getElementById('thresholdGm2').value = 20;
+            document.getElementById('thresholdGm3').value = 15;
+            document.getElementById('thresholdPb1').value = 24;
+            document.getElementById('thresholdPb2').value = 18;
+            document.getElementById('rateKzt').value = 65;
+            document.getElementById('rateUzs').value = 1750;
+            document.getElementById('fxVolatility').value = 5;
+            document.getElementById('tariffKz').value = 5;
+            document.getElementById('vatKz').value = 12;
+            document.getElementById('tariffUz').value = 8;
+            document.getElementById('vatUz').value = 15;
+            document.getElementById('defaultCurrency').value = 'CNY';
+            document.getElementById('pageSize').value = 12;
+            document.getElementById('autoSave').checked = true;
+            document.getElementById('debugMode').checked = false;
+            
+            showToast('已恢复默认设置，请点击保存', 'info');
+        }
+        
+        // 重置示例数据
+        async function resetSampleData() {
+            if (!confirm('确定要重置示例数据吗？所有项目将被清除并重新生成示例项目。')) return;
+            
+            try {
+                await db.resetDatabase();
+                showToast('示例数据已重置', 'success');
+            } catch (error) {
+                showToast('重置失败：' + error.message, 'error');
+            }
+        }
+        
+        // 清空所有数据
+        async function clearAllData() {
+            if (!confirm('⚠️ 警告：此操作将永久删除所有数据，且不可恢复！\n\n确定要继续吗？')) return;
+            if (!confirm('再次确认：真的要清空所有数据吗？')) return;
+            
+            try {
+                await db.clearAllData();
+                showToast('所有数据已清空', 'success');
+            } catch (error) {
+                showToast('清空失败：' + error.message, 'error');
+            }
+        }
+        
+        // 导出数据
+        async function exportData() {
+            try {
+                const projects = await db.getProjects();
+                const settings = await db.getSettings();
+                
+                const data = {
+                    exportDate: new Date().toISOString(),
+                    version: '2.0',
+                    projects,
+                    settings
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `中亚项目备份_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                showToast('数据已导出', 'success');
+            } catch (error) {
+                showToast('导出失败：' + error.message, 'error');
+            }
+        }
+        
+        // Toast
+        function showToast(message, type = 'info') {
+            const container = document.querySelector('.toast-container');
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-content">${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+    <script src="ai-assistant.js"></script>
+</body>
+</html>

@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>哈萨克斯坦设备定价测算器 - 中亚跨境项目管理</title>
+    <link rel="stylesheet" href="list.css">
+    <link rel="stylesheet" href="pricing.css">
+    <script src="lib/chart.min.js"></script>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">中亚跨境设备租售管理</span>
+            </div>
+            <div class="nav-tabs">
+                <a href="list.html" class="nav-tab">📋 项目列表</a>
+                <a href="pricing.html" class="nav-tab active">💰 定价测算</a>
+                <a href="fx.html" class="nav-tab">💱 汇率管理</a>
+                <a href="data.html" class="nav-tab">🗄️ 数据中心</a>
+                <a href="settings.html" class="nav-tab">⚙️ 系统设置</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn" onclick="resetToDefaults()" title="重置默认值">🔄 重置</button>
+            <button class="nav-btn primary" onclick="exportQuote()" title="导出报价单">📄 导出报价</button>
+        </div>
+    </nav>
+
+    <!-- 页面标题区 -->
+    <header class="page-hero pricing-hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>🇰🇿 哈萨克斯坦设备定价测算器</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="pricing-main">
+        <!-- 左侧：输入面板 -->
+        <aside class="input-panel">
+            <!-- 设备信息 -->
+            <section class="input-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h3>🚜 设备信息</h3>
+                    <span class="collapse-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label>设备类型 <span class="required">*</span></label>
+                        <select id="equipmentType" onchange="onEquipmentTypeChange()">
+                            <option value="excavator">挖掘机</option>
+                            <option value="loader">装载机</option>
+                            <option value="bulldozer">推土机</option>
+                            <option value="crane">起重机</option>
+                            <option value="roller">压路机</option>
+                            <option value="grader">平地机</option>
+                            <option value="other">其他设备</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>机型/吨位</label>
+                        <input type="text" id="equipmentModel" placeholder="如：CAT320 / 20吨" value="CAT320">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>设备状态 <span class="required">*</span></label>
+                            <select id="equipmentCondition" onchange="onConditionChange()">
+                                <option value="new">全新机</option>
+                                <option value="A">二手A级(90%新)</option>
+                                <option value="B" selected>二手B级(75%新)</option>
+                                <option value="C">二手C级(60%新)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>数量</label>
+                            <input type="number" id="quantity" value="1" min="1" max="100" onchange="calculate()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            采购价（CNY/台）
+                            <span class="hint" onclick="showTooltip('purchasePrice')">ℹ️</span>
+                        </label>
+                        <input type="number" id="purchasePrice" value="800000" min="0" step="10000" onchange="calculate()">
+                        <span class="default-hint">默认值基于设备状态自动调整</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 交付方式 -->
+            <section class="input-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h3>🚚 交付方式</h3>
+                    <span class="collapse-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="delivery-toggle">
+                        <button class="delivery-btn" id="btnEXW" onclick="setDeliveryMode('EXW')">
+                            <span class="delivery-icon">🏭</span>
+                            <span class="delivery-title">EXW 中国交付</span>
+                            <span class="delivery-desc">中国境内交货，跨境段由客户承担</span>
+                        </button>
+                        <button class="delivery-btn active" id="btnDAP" onclick="setDeliveryMode('DAP')">
+                            <span class="delivery-icon">🇰🇿</span>
+                            <span class="delivery-title">DAP 到哈萨克</span>
+                            <span class="delivery-desc">含国际运输+清关+保险（到场交付）</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label>运输路线/口岸</label>
+                        <select id="transportRoute" onchange="onRouteChange()">
+                            <option value="霍尔果斯-公路" data-freight="25000" data-days="7">霍尔果斯口岸 - 公路运输 (约7天)</option>
+                            <option value="霍尔果斯-铁路" data-freight="18000" data-days="10" selected>霍尔果斯口岸 - 铁路运输 (约10天)</option>
+                            <option value="阿拉山口-铁路" data-freight="20000" data-days="12">阿拉山口 - 铁路运输 (约12天)</option>
+                            <option value="连云港-海铁联运" data-freight="35000" data-days="20">连云港 - 海铁联运 (约20天)</option>
+                        </select>
+                    </div>
+
+                    <!-- DAP模式下的费用明细 -->
+                    <div id="dapCostDetails" class="cost-details">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>国内运输费</label>
+                                <input type="number" id="domesticFreight" value="15000" onchange="calculate()">
+                            </div>
+                            <div class="form-group">
+                                <label>国际运输费</label>
+                                <input type="number" id="internationalFreight" value="18000" onchange="calculate()">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>装卸/绑扎费</label>
+                                <input type="number" id="loadingFee" value="5000" onchange="calculate()">
+                            </div>
+                            <div class="form-group">
+                                <label>清关服务费</label>
+                                <input type="number" id="customsFee" value="8000" onchange="calculate()">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>运输保险费</label>
+                                <input type="number" id="insuranceFee" value="6400" onchange="calculate()">
+                                <span class="calc-hint">≈采购价×0.8%</span>
+                            </div>
+                            <div class="form-group">
+                                <label>预备费</label>
+                                <input type="number" id="contingencyFee" value="5000" onchange="calculate()">
+                            </div>
+                        </div>
+                        
+                        <div class="tax-config">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeTaxInPrice" checked onchange="calculate()">
+                                <span>报价含税费（关税+增值税由我方代缴）</span>
+                                <span class="hint" onclick="showModal('taxExplain')">ℹ️</span>
+                            </label>
+                            <div class="form-row" id="taxRateRow">
+                                <div class="form-group">
+                                    <label>关税率</label>
+                                    <input type="number" id="tariffRate" value="5" step="0.1" onchange="calculate()">
+                                    <span class="unit">%</span>
+                                </div>
+                                <div class="form-group">
+                                    <label>增值税率</label>
+                                    <input type="number" id="vatRate" value="12" step="0.1" onchange="calculate()">
+                                    <span class="unit">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 资金方式 -->
+            <section class="input-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h3>💰 资金方式</h3>
+                    <span class="collapse-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="toggle-buttons">
+                        <button class="toggle-btn active" onclick="setFundingMode('full')" id="btnFull">全款购置</button>
+                        <button class="toggle-btn" onclick="setFundingMode('financing')" id="btnFinancing">融资租赁</button>
+                    </div>
+                    
+                    <div id="financingDetails" class="financing-details" style="display:none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>首付比例</label>
+                                <input type="number" id="downPaymentRate" value="30" min="10" max="50" onchange="calculate()">
+                                <span class="unit">%</span>
+                            </div>
+                            <div class="form-group">
+                                <label>年利率</label>
+                                <input type="number" id="interestRate" value="8" step="0.1" onchange="calculate()">
+                                <span class="unit">%</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>融资期限</label>
+                            <select id="financingTerm" onchange="calculate()">
+                                <option value="12">12个月</option>
+                                <option value="24" selected>24个月</option>
+                                <option value="36">36个月</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 运营参数 -->
+            <section class="input-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h3>⚙️ 运营参数</h3>
+                    <span class="collapse-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label>
+                            利用率 (u)
+                            <span class="hint" onclick="showTooltip('utilization')">ℹ️</span>
+                        </label>
+                        <div class="slider-group">
+                            <input type="range" id="utilizationSlider" min="30" max="100" value="70" oninput="syncSlider('utilization')">
+                            <input type="number" id="utilization" value="70" min="30" max="100" onchange="syncInput('utilization')">
+                            <span class="unit">%</span>
+                        </div>
+                        <span class="calc-hint">70%=年中约8.4个月实际出租</span>
+                    </div>
+                    
+                    <!-- 维修成本（含大修） -->
+                    <div class="subsection-title">
+                        <span>🔧 维修成本</span>
+                        <span class="hint" onclick="showModal('maintenanceRules')">查看规则 ▸</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>小修预提/月</label>
+                            <input type="number" id="minorMaintenance" value="2000" onchange="calculate()">
+                            <span class="calc-hint">滤芯/机油/易损件</span>
+                        </div>
+                        <div class="form-group">
+                            <label>大修预提/月</label>
+                            <input type="number" id="majorMaintenance" value="3000" onchange="calculate()">
+                            <span class="calc-hint">液压/发动机/底盘</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>停工损失率（可选）</label>
+                        <div class="slider-group">
+                            <input type="range" id="downtimeRateSlider" min="0" max="15" value="5" oninput="syncSlider('downtimeRate')">
+                            <input type="number" id="downtimeRate" value="5" min="0" max="15" onchange="syncInput('downtimeRate')">
+                            <span class="unit">%</span>
+                        </div>
+                        <span class="calc-hint">出险/停工期间的收入损失估计</span>
+                    </div>
+                    
+                    <!-- 其他运营成本 -->
+                    <div class="subsection-title">
+                        <span>📋 其他运营成本</span>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>保险/月</label>
+                            <input type="number" id="monthlyInsurance" value="1500" onchange="calculate()">
+                            <span class="calc-hint">财产险+三责险</span>
+                        </div>
+                        <div class="form-group">
+                            <label>管理费/月</label>
+                            <input type="number" id="managementFee" value="2000" onchange="calculate()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>场站费/月</label>
+                            <input type="number" id="yardFee" value="1000" onchange="calculate()">
+                        </div>
+                        <div class="form-group">
+                            <label>其他费用/月</label>
+                            <input type="number" id="otherCost" value="500" onchange="calculate()">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            24个月残值率
+                            <span class="hint" onclick="showTooltip('residualValue')">ℹ️</span>
+                        </label>
+                        <div class="slider-group">
+                            <input type="range" id="residualRateSlider" min="20" max="70" value="50" oninput="syncSlider('residualRate')">
+                            <input type="number" id="residualRate" value="50" min="20" max="70" onchange="syncInput('residualRate')">
+                            <span class="unit">%</span>
+                        </div>
+                        <span class="calc-hint">残值 S = 采购价 × 残值率</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 币种与汇率 -->
+            <section class="input-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h3>💱 币种与汇率</h3>
+                    <span class="collapse-icon">▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label>CNY → KZT 汇率</label>
+                        <input type="number" id="exchangeRate" value="68.5" step="0.1" onchange="calculate()">
+                        <span class="calc-hint">1 CNY = <span id="rateDisplay">68.5</span> KZT</span>
+                    </div>
+                    <div class="form-group">
+                        <label>报价显示币种</label>
+                        <div class="toggle-buttons">
+                            <button class="toggle-btn active" onclick="setCurrency('CNY')" id="btnCNY">CNY 人民币</button>
+                            <button class="toggle-btn" onclick="setCurrency('KZT')" id="btnKZT">KZT 坚戈</button>
+                            <button class="toggle-btn" onclick="setCurrency('BOTH')" id="btnBOTH">双币显示</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 高级选项 -->
+            <section class="input-section collapsed">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h3>🔧 高级选项</h3>
+                    <span class="collapse-icon">▶</span>
+                </div>
+                <div class="section-content" style="display:none;">
+                    <div class="form-group">
+                        <label>目标毛利率</label>
+                        <div class="slider-group">
+                            <input type="range" id="targetMarginSlider" min="15" max="50" value="30" oninput="syncSlider('targetMargin')">
+                            <input type="number" id="targetMargin" value="30" min="15" max="50" onchange="syncInput('targetMargin')">
+                            <span class="unit">%</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>回本周期</label>
+                        <select id="paybackPeriod" onchange="calculate()">
+                            <option value="12">12个月</option>
+                            <option value="24" selected>24个月</option>
+                            <option value="36">36个月</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>回本口径</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="paybackBasis" value="total" checked onchange="calculate()">
+                                <span>总投资回本</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="paybackBasis" value="equity" onchange="calculate()">
+                                <span>股权现金回本</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- 右侧：输出面板 -->
+        <div class="output-panel">
+            <!-- 产品类型与回本口径切换 -->
+            <div class="output-toolbar">
+                <div class="product-tabs">
+                    <button class="product-tab active" onclick="setProductType('lease')" id="tabLease">📋 出租</button>
+                    <button class="product-tab" onclick="setProductType('rent-to-own')" id="tabRentToOwn">🔄 以租代售</button>
+                    <button class="product-tab" onclick="setProductType('sale')" id="tabSale">💵 直接销售</button>
+                </div>
+                <div class="payback-tabs">
+                    <span class="payback-tabs-label">回本口径：</span>
+                    <button class="payback-tab active" onclick="setPaybackBasis('total')" id="tabPaybackTotal">
+                        📊 总投资回本
+                    </button>
+                    <button class="payback-tab" onclick="setPaybackBasis('equity')" id="tabPaybackEquity">
+                        💰 自有资金回本
+                    </button>
+                    <span class="hint" onclick="showModal('paybackExplain')">ℹ️</span>
+                </div>
+            </div>
+
+            <!-- ========== 财务漏斗模型 ========== -->
+            <div class="funnel-section">
+                <div class="funnel-header">
+                    <h3>🔻 财务漏斗模型</h3>
+                    <span class="funnel-subtitle">从客户月租金 → 层层分解到设备采购成本</span>
+                </div>
+                <div class="funnel-container">
+                    <div class="funnel-chart">
+                        <!-- SVG 漏斗图 -->
+                        <svg id="funnelSvg" viewBox="0 0 500 420" class="funnel-svg">
+                            <defs>
+                                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#22c55e"/>
+                                    <stop offset="100%" style="stop-color:#16a34a"/>
+                                </linearGradient>
+                                <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#eab308"/>
+                                    <stop offset="100%" style="stop-color:#ca8a04"/>
+                                </linearGradient>
+                                <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f97316"/>
+                                    <stop offset="100%" style="stop-color:#ea580c"/>
+                                </linearGradient>
+                                <linearGradient id="grad4" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#06b6d4"/>
+                                    <stop offset="100%" style="stop-color:#0891b2"/>
+                                </linearGradient>
+                                <linearGradient id="grad5" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#8b5cf6"/>
+                                    <stop offset="100%" style="stop-color:#7c3aed"/>
+                                </linearGradient>
+                                <linearGradient id="grad6" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#3b82f6"/>
+                                    <stop offset="100%" style="stop-color:#2563eb"/>
+                                </linearGradient>
+                                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+                                </filter>
+                            </defs>
+                            
+                            <!-- 漏斗层级 - 金额从大到小 (上宽下窄) -->
+                            <g class="funnel-layers" filter="url(#shadow)">
+                                <!-- Layer 1: 月租报价 × 月份 = 总收入 (最宽，金额最大) -->
+                                <polygon id="funnelPath1" class="funnel-path" points="10,0 390,0 365,55 35,55" fill="url(#grad1)" onclick="showFunnelDetail(7)"/>
+                                <!-- Layer 2: 总收入目标 -->
+                                <polygon id="funnelPath2" class="funnel-path" points="35,57 365,57 335,112 65,112" fill="url(#grad2)" onclick="showFunnelDetail(6)"/>
+                                <!-- Layer 3: 毛利空间 (30%) -->
+                                <polygon id="funnelPath3" class="funnel-path" points="65,114 335,114 300,169 100,169" fill="url(#grad3)" onclick="showFunnelDetail(5)"/>
+                                <!-- Layer 4: 运营成本 -->
+                                <polygon id="funnelPath4" class="funnel-path" points="100,171 300,171 265,226 135,226" fill="url(#grad4)" onclick="showFunnelDetail(4)"/>
+                                <!-- Layer 5: 落地成本 -->
+                                <polygon id="funnelPath5" class="funnel-path" points="135,228 265,228 235,283 165,283" fill="url(#grad5)" onclick="showFunnelDetail(2)"/>
+                                <!-- Layer 6: 采购价 (最窄，金额最小) -->
+                                <polygon id="funnelPath6" class="funnel-path" points="165,285 235,285 220,380 180,380" fill="url(#grad6)" onclick="showFunnelDetail(1)"/>
+                            </g>
+                            
+                            <!-- 漏斗文字标签 -->
+                            <g class="funnel-labels" fill="white" font-family="system-ui, sans-serif">
+                                <text x="200" y="35" text-anchor="middle" font-size="13" font-weight="600" id="funnelQuoteLabel">① 月租报价</text>
+                                <text x="200" y="92" text-anchor="middle" font-size="13" font-weight="600">② 总收入目标 (24月)</text>
+                                <text x="200" y="149" text-anchor="middle" font-size="13" font-weight="600">③ 目标毛利 30%</text>
+                                <text x="200" y="206" text-anchor="middle" font-size="13" font-weight="600">④ 运营成本 O</text>
+                                <text x="200" y="263" text-anchor="middle" font-size="12" font-weight="600">⑤ 落地成本 C</text>
+                                <text x="200" y="340" text-anchor="middle" font-size="11" font-weight="700">⑥ 采购价</text>
+                            </g>
+                            
+                            <!-- 右侧数值标签 -->
+                            <g class="funnel-values" font-family="'SF Mono', Consolas, monospace" font-size="12">
+                                <text x="410" y="35" fill="#22c55e" font-weight="700" font-size="14" id="funnelQuote">¥69,368/月</text>
+                                <text x="410" y="92" fill="#eab308" font-weight="600" id="funnelRevenue">¥1,165,377</text>
+                                <text x="410" y="149" fill="#f97316" font-weight="600" id="funnelProfit">¥349,613</text>
+                                <text x="410" y="206" fill="#06b6d4" font-weight="600" id="funnelOperating">¥216,000</text>
+                                <text x="410" y="263" fill="#8b5cf6" font-weight="600" id="funnelLanding">¥998,432</text>
+                                <text x="350" y="263" fill="#a78bfa" font-size="10" id="funnelDeliveryTag">DAP</text>
+                                <text x="410" y="340" fill="#3b82f6" font-weight="600" id="funnelPurchase">¥800,000</text>
+                            </g>
+                        </svg>
+                        
+                        <!-- 漏斗说明 -->
+                        <div class="funnel-explanation" style="text-align:center; color:#666; font-size:12px; margin:10px 0;">
+                            💡 <strong>解读：</strong>客户支付的月租金 → 拆解成收入、毛利、各项成本 → 最终回溯到采购价
+                        </div>
+                        
+                        <!-- 图例 -->
+                        <div class="funnel-legend">
+                            <span class="legend-item"><i style="background:#22c55e"></i>月租报价</span>
+                            <span class="legend-item"><i style="background:#eab308"></i>总收入</span>
+                            <span class="legend-item"><i style="background:#f97316"></i>毛利空间</span>
+                            <span class="legend-item"><i style="background:#06b6d4"></i>运营成本</span>
+                            <span class="legend-item"><i style="background:#8b5cf6"></i>落地成本</span>
+                            <span class="legend-item"><i style="background:#3b82f6"></i>采购价</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 关键差额卡片 -->
+                    <div class="funnel-insights">
+                        <div class="insight-card">
+                            <div class="insight-icon">💡</div>
+                            <div class="insight-content">
+                                <h5>成本节约空间</h5>
+                                <p>采购价每下降 <strong>1%</strong></p>
+                                <p class="insight-value">→ 月租可降 <span id="insightPurchase">¥476</span></p>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon">🚚</div>
+                            <div class="insight-content">
+                                <h5>交付方式差额</h5>
+                                <p>EXW vs DAP 落地成本差</p>
+                                <p class="insight-value"><span id="insightDelivery">¥198,432</span></p>
+                                <p class="insight-sub">→ 月租差 <span id="insightDeliveryRent">¥11,811</span></p>
+                            </div>
+                        </div>
+                        <div class="insight-card">
+                            <div class="insight-icon">📈</div>
+                            <div class="insight-content">
+                                <h5>利用率敏感性</h5>
+                                <p>利用率从 60% → 80%</p>
+                                <p class="insight-value">→ 月租降 <span id="insightUtilization">¥23,123</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 报价卡片区 -->
+            <div class="quote-cards">
+                <!-- 租赁报价 -->
+                <div class="quote-card lease-card">
+                    <div class="card-header">
+                        <h3>📋 租赁报价</h3>
+                        <span class="card-badge">推荐</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="price-row main-price">
+                            <span class="price-label">建议日租</span>
+                            <span class="price-value" id="dailyRent">--</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">建议月租</span>
+                            <span class="price-value highlight" id="monthlyRent">--</span>
+                        </div>
+                        <div class="price-includes">
+                            <span class="includes-label" onclick="showModal('rentIncludes')">报价包含项 ▸</span>
+                            <div class="includes-tags">
+                                <span class="tag">设备</span>
+                                <span class="tag" id="tagTransport">运输</span>
+                                <span class="tag">保险</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span class="footer-note">基于利用率 <span id="noteUtilization">70%</span>，毛利率 <span id="noteMargin">30%</span></span>
+                    </div>
+                </div>
+
+                <!-- 以租代售 -->
+                <div class="quote-card rent-to-own-card">
+                    <div class="card-header">
+                        <h3>🔄 以租代售方案</h3>
+                        <span class="card-badge secondary">分期</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="price-row">
+                            <span class="price-label">首付款</span>
+                            <span class="price-value" id="downPayment">--</span>
+                        </div>
+                        <div class="price-row main-price">
+                            <span class="price-label">月供 × <span id="installmentMonths">24</span>期</span>
+                            <span class="price-value highlight" id="monthlyInstallment">--</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="price-label">期末买断价（残值）</span>
+                            <span class="price-value" id="buyoutPrice">--</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">总支付</span>
+                            <span class="total-value" id="totalPayment">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 直接销售 -->
+                <div class="quote-card sale-card">
+                    <div class="card-header">
+                        <h3>💵 直接销售价</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="price-row" id="exwPriceRow">
+                            <span class="price-label">
+                                EXW价（中国交付）
+                                <span class="hint" onclick="showModal('exwExplain')">ℹ️</span>
+                            </span>
+                            <span class="price-value" id="exwPrice">--</span>
+                        </div>
+                        <div class="price-row main-price" id="dapPriceRow">
+                            <span class="price-label">
+                                DAP价（到哈萨克）
+                                <span class="hint" onclick="showModal('dapExplain')">ℹ️</span>
+                            </span>
+                            <span class="price-value highlight" id="dapPrice">--</span>
+                        </div>
+                        <div class="price-range">
+                            <span class="range-label">参考区间</span>
+                            <span class="range-value" id="priceRange">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXW vs DAP 对比卡片 -->
+            <div class="comparison-card">
+                <h3>📊 EXW vs DAP 交付对比</h3>
+                <div class="comparison-table">
+                    <div class="comparison-header">
+                        <div class="col-item"></div>
+                        <div class="col-exw">🏭 EXW 中国交付</div>
+                        <div class="col-dap">🇰🇿 DAP 到哈萨克</div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="col-item">到场时间</div>
+                        <div class="col-exw" id="exwTime">即时</div>
+                        <div class="col-dap" id="dapTime">约10天</div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="col-item">费用差额</div>
+                        <div class="col-exw">基准</div>
+                        <div class="col-dap highlight" id="costDiff">+¥57,400</div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="col-item">责任边界</div>
+                        <div class="col-exw">中国工厂/仓库</div>
+                        <div class="col-dap">哈萨克目的地</div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="col-item">风险承担</div>
+                        <div class="col-exw">买方承担运输风险</div>
+                        <div class="col-dap">卖方承担至交货</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="charts-section">
+                <div class="chart-row">
+                    <!-- 成本构成饼图 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4>📊 成本构成分析</h4>
+                            <div class="chart-toggle">
+                                <button class="chart-btn active" onclick="switchCostChartType('doughnut')">饼图</button>
+                                <button class="chart-btn" onclick="switchCostChartType('bar')">柱图</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="costChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 24个月现金流 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4>📈 24个月现金流（双口径）</h4>
+                            <div class="cashflow-legend">
+                                <span class="legend-item total-basis">● 总投资口径</span>
+                                <span class="legend-item equity-basis">● 自有资金口径</span>
+                                <span class="legend-item zero-line">-- 零线</span>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="cashFlowChart"></canvas>
+                        </div>
+                        <div class="payback-indicators">
+                            <div class="payback-indicator">
+                                <span class="payback-label">总投资回本：</span>
+                                <span class="payback-value" id="paybackMonthTotal">第18个月</span>
+                                <span class="payback-status success" id="paybackStatusTotal">✅</span>
+                            </div>
+                            <div class="payback-indicator">
+                                <span class="payback-label">自有资金回本：</span>
+                                <span class="payback-value" id="paybackMonthEquity">第12个月</span>
+                                <span class="payback-status success" id="paybackStatusEquity">✅</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第二行图表 -->
+                <div class="chart-row">
+                    <!-- 利用率-月租曲线 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4>📉 利用率-月租关系曲线</h4>
+                            <span class="chart-hint">利用率越高，月租越低</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="utilizationChart"></canvas>
+                        </div>
+                        <div class="utilization-marker">
+                            <span>当前利用率 <strong id="currentUtilization">70%</strong> 对应月租 <strong id="currentRentByU">--</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- 维修成本瀑布图 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4>🔧 维修成本影响分析</h4>
+                            <span class="chart-hint" onclick="showModal('maintenanceRules')">查看维修规则 ▸</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="maintenanceChart"></canvas>
+                        </div>
+                        <div class="maintenance-summary">
+                            <span>维修总成本/24月：<strong id="totalMaintenanceCost">--</strong></span>
+                            <span>对月租影响：<strong id="maintenanceImpact">--</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 敏感性分析 -->
+                <div class="chart-card sensitivity-card">
+                    <div class="chart-header">
+                        <h4>🎚️ 敏感性分析 - 月租影响因素</h4>
+                        <span class="chart-hint">拖动滑杆查看参数变化对月租的影响</span>
+                    </div>
+                    <div class="sensitivity-controls">
+                        <div class="sensitivity-item">
+                            <label>利用率</label>
+                            <input type="range" id="sensUtilization" min="-30" max="30" value="0" oninput="updateSensitivity()">
+                            <span class="sens-value" id="sensUtilizationVal">±0%</span>
+                        </div>
+                        <div class="sensitivity-item">
+                            <label>运费</label>
+                            <input type="range" id="sensFreight" min="-30" max="30" value="0" oninput="updateSensitivity()">
+                            <span class="sens-value" id="sensFreightVal">±0%</span>
+                        </div>
+                        <div class="sensitivity-item">
+                            <label>汇率</label>
+                            <input type="range" id="sensExchange" min="-20" max="20" value="0" oninput="updateSensitivity()">
+                            <span class="sens-value" id="sensExchangeVal">±0%</span>
+                        </div>
+                        <div class="sensitivity-item">
+                            <label>残值</label>
+                            <input type="range" id="sensResidual" min="-30" max="30" value="0" oninput="updateSensitivity()">
+                            <span class="sens-value" id="sensResidualVal">±0%</span>
+                        </div>
+                    </div>
+                    <div class="chart-container sensitivity-chart">
+                        <canvas id="sensitivityChart"></canvas>
+                    </div>
+                    <div class="sensitivity-result">
+                        <span>调整后月租建议：</span>
+                        <span class="adjusted-rent" id="adjustedRent">--</span>
+                        <span class="rent-change" id="rentChange">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 计算明细折叠区 -->
+            <div class="calculation-details">
+                <div class="details-header" onclick="toggleCalculationDetails()">
+                    <h4>📋 计算明细与公式</h4>
+                    <span class="collapse-icon">▶</span>
+                </div>
+                <div class="details-content" style="display:none;">
+                    <div class="formula-section">
+                        <h5>落地总成本 C</h5>
+                        <div class="formula">
+                            C = 采购价 + 国内运输 + 国际运输 + 装卸费 + 清关费 + 保险 + 预备费 + 税费
+                        </div>
+                        <div class="formula-result" id="formulaCost">C = ¥800,000 + ¥15,000 + ¥18,000 + ¥5,000 + ¥8,000 + ¥6,400 + ¥5,000 + ¥141,032 = ¥998,432</div>
+                    </div>
+                    <div class="formula-section">
+                        <h5>24个月运营成本 O</h5>
+                        <div class="formula">
+                            O = (维修预提 + 保险 + 管理费 + 场站费) × 24
+                        </div>
+                        <div class="formula-result" id="formulaOperating">O = (¥3,000 + ¥1,500 + ¥2,000 + ¥1,000) × 24 = ¥180,000</div>
+                    </div>
+                    <div class="formula-section">
+                        <h5>残值 S</h5>
+                        <div class="formula">
+                            S = 采购价 × 残值率
+                        </div>
+                        <div class="formula-result" id="formulaResidual">S = ¥800,000 × 50% = ¥400,000</div>
+                    </div>
+                    <div class="formula-section highlight">
+                        <h5>满足毛利率的总收入 R<sub>total</sub></h5>
+                        <div class="formula">
+                            R<sub>total</sub> = (C - S + O) / (1 - g)
+                        </div>
+                        <div class="formula-result" id="formulaRevenue">R<sub>total</sub> = (¥998,432 - ¥400,000 + ¥180,000) / 0.7 = ¥1,112,046</div>
+                    </div>
+                    <div class="formula-section highlight">
+                        <h5>建议月租 R<sub>month</sub></h5>
+                        <div class="formula">
+                            R<sub>month</sub> = R<sub>total</sub> / (T × u)
+                        </div>
+                        <div class="formula-result" id="formulaRent">R<sub>month</sub> = ¥1,112,046 / (24 × 0.7) = ¥66,193</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 弹窗：税费口径说明 -->
+    <div class="modal" id="modalTaxExplain">
+        <div class="modal-overlay" onclick="closeModal('taxExplain')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 税费口径说明</h3>
+                <button class="modal-close" onclick="closeModal('taxExplain')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="explain-section">
+                    <h4>哈萨克斯坦进口税费构成</h4>
+                    <table class="explain-table">
+                        <tr>
+                            <th>税种</th>
+                            <th>税率</th>
+                            <th>计税基础</th>
+                        </tr>
+                        <tr>
+                            <td>进口关税</td>
+                            <td>0-15%（工程机械通常5%）</td>
+                            <td>CIF价值</td>
+                        </tr>
+                        <tr>
+                            <td>增值税</td>
+                            <td>12%</td>
+                            <td>CIF + 关税</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="explain-section">
+                    <h4>税费承担方式</h4>
+                    <div class="radio-options">
+                        <label class="option-card">
+                            <input type="radio" name="taxBearer" value="seller" checked>
+                            <span class="option-content">
+                                <strong>卖方代缴（含税价）</strong>
+                                <p>税费计入报价，买方支付一口价，手续由卖方协调</p>
+                            </span>
+                        </label>
+                        <label class="option-card">
+                            <input type="radio" name="taxBearer" value="buyer">
+                            <span class="option-content">
+                                <strong>买方自行清关</strong>
+                                <p>报价不含税费，买方自行办理进口手续并缴纳税款</p>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="disclaimer">
+                    <strong>⚠️ 免责声明</strong>
+                    <p>以上税率为参考值，实际税率以哈萨克斯坦海关核定为准。部分设备可能享受优惠政策或减免。建议以正式清关单据为准。</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('taxExplain')">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：报价包含项 -->
+    <div class="modal" id="modalRentIncludes">
+        <div class="modal-overlay" onclick="closeModal('rentIncludes')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📦 报价包含项说明</h3>
+                <button class="modal-close" onclick="closeModal('rentIncludes')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="includes-grid">
+                    <div class="include-item included">
+                        <span class="icon">✅</span>
+                        <span class="name">设备本体</span>
+                        <span class="desc">含标准配置</span>
+                    </div>
+                    <div class="include-item" id="incTransport">
+                        <span class="icon">✅</span>
+                        <span class="name">运输至目的地</span>
+                        <span class="desc">DAP模式包含</span>
+                    </div>
+                    <div class="include-item included">
+                        <span class="icon">✅</span>
+                        <span class="name">运输保险</span>
+                        <span class="desc">全程货运险</span>
+                    </div>
+                    <div class="include-item" id="incClearance">
+                        <span class="icon">✅</span>
+                        <span class="name">清关协调</span>
+                        <span class="desc">DAP模式包含</span>
+                    </div>
+                    <div class="include-item optional">
+                        <span class="icon">⚪</span>
+                        <span class="name">维修保养</span>
+                        <span class="desc">可选增值服务</span>
+                    </div>
+                    <div class="include-item optional">
+                        <span class="icon">⚪</span>
+                        <span class="name">备件供应</span>
+                        <span class="desc">可选增值服务</span>
+                    </div>
+                    <div class="include-item optional">
+                        <span class="icon">⚪</span>
+                        <span class="name">操作手</span>
+                        <span class="desc">可选增值服务</span>
+                    </div>
+                    <div class="include-item optional">
+                        <span class="icon">⚪</span>
+                        <span class="name">培训服务</span>
+                        <span class="desc">可选增值服务</span>
+                    </div>
+                </div>
+                <div class="includes-note">
+                    <p>✅ 已包含 | ⚪ 可选服务（另行报价）</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('rentIncludes')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：条款摘要 -->
+    <div class="modal" id="modalTerms">
+        <div class="modal-overlay" onclick="closeModal('terms')"></div>
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>📜 租赁条款摘要</h3>
+                <button class="modal-close" onclick="closeModal('terms')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="terms-grid">
+                    <div class="term-card">
+                        <h4>💰 押金</h4>
+                        <p>首次租赁需缴纳<strong>2个月租金</strong>作为履约保证金，租期结束无损坏/欠费情况下全额退还。</p>
+                    </div>
+                    <div class="term-card">
+                        <h4>📅 最低租期</h4>
+                        <p>最低租期 <strong>3个月</strong>，不足3个月按3个月计费。长期租赁（12个月+）可享折扣。</p>
+                    </div>
+                    <div class="term-card">
+                        <h4>⏱️ 超时计费</h4>
+                        <p>日租按<strong>8小时/天</strong>计算，超出部分按<strong>小时费率×1.5</strong>计费，夜间作业另加20%。</p>
+                    </div>
+                    <div class="term-card">
+                        <h4>🔧 维修责任</h4>
+                        <p><strong>日常保养</strong>：承租方负责<br><strong>非人为故障</strong>：出租方负责<br><strong>人为损坏</strong>：承租方赔偿</p>
+                    </div>
+                    <div class="term-card">
+                        <h4>⚠️ 逾期处理</h4>
+                        <p>逾期7天内：日租金×<strong>0.1%</strong>滞纳金<br>逾期30天：有权收回设备并扣除押金</p>
+                    </div>
+                    <div class="term-card">
+                        <h4>🛡️ 保险要求</h4>
+                        <p>承租方需购买<strong>第三者责任险</strong>，设备损失险由出租方统一投保并计入租金。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('terms')">关闭</button>
+                <button class="btn btn-primary" onclick="showModal('fullContract')">查看完整合同</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：EXW说明 -->
+    <div class="modal" id="modalExwExplain">
+        <div class="modal-overlay" onclick="closeModal('exwExplain')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🏭 EXW（工厂交货）说明</h3>
+                <button class="modal-close" onclick="closeModal('exwExplain')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="incoterm-diagram">
+                    <div class="diagram-step seller">
+                        <span class="step-icon">🏭</span>
+                        <span class="step-label">卖方工厂</span>
+                        <span class="step-status">交货点</span>
+                    </div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-step buyer">
+                        <span class="step-icon">🚛</span>
+                        <span class="step-label">国内运输</span>
+                        <span class="step-status">买方负责</span>
+                    </div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-step buyer">
+                        <span class="step-icon">🛃</span>
+                        <span class="step-label">出口清关</span>
+                        <span class="step-status">买方负责</span>
+                    </div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-step buyer">
+                        <span class="step-icon">🚂</span>
+                        <span class="step-label">国际运输</span>
+                        <span class="step-status">买方负责</span>
+                    </div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-step buyer">
+                        <span class="step-icon">🇰🇿</span>
+                        <span class="step-label">进口清关</span>
+                        <span class="step-status">买方负责</span>
+                    </div>
+                </div>
+                <div class="incoterm-note">
+                    <p><strong>EXW价格仅包含</strong>：设备本体 + 出厂检验 + 包装</p>
+                    <p><strong>买方需自行安排</strong>：装车、国内运输、出口报关、国际运输、进口清关、保险等全部物流环节</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('exwExplain')">了解</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：DAP说明 -->
+    <div class="modal" id="modalDapExplain">
+        <div class="modal-overlay" onclick="closeModal('dapExplain')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🇰🇿 DAP（目的地交货）说明</h3>
+                <button class="modal-close" onclick="closeModal('dapExplain')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="incoterm-diagram">
+                    <div class="diagram-step seller">
+                        <span class="step-icon">🏭</span>
+                        <span class="step-label">卖方工厂</span>
+                        <span class="step-status">起点</span>
+                    </div>
+                    <div class="diagram-arrow seller">→</div>
+                    <div class="diagram-step seller">
+                        <span class="step-icon">🚛</span>
+                        <span class="step-label">国内运输</span>
+                        <span class="step-status">卖方负责</span>
+                    </div>
+                    <div class="diagram-arrow seller">→</div>
+                    <div class="diagram-step seller">
+                        <span class="step-icon">🛃</span>
+                        <span class="step-label">出口清关</span>
+                        <span class="step-status">卖方负责</span>
+                    </div>
+                    <div class="diagram-arrow seller">→</div>
+                    <div class="diagram-step seller">
+                        <span class="step-icon">🚂</span>
+                        <span class="step-label">国际运输</span>
+                        <span class="step-status">卖方负责</span>
+                    </div>
+                    <div class="diagram-arrow seller">→</div>
+                    <div class="diagram-step seller">
+                        <span class="step-icon">🇰🇿</span>
+                        <span class="step-label">目的地</span>
+                        <span class="step-status">交货点</span>
+                    </div>
+                </div>
+                <div class="incoterm-note success">
+                    <p><strong>DAP价格包含</strong>：设备 + 包装 + 国内运输 + 出口报关 + 国际运输 + 保险 + 清关协调</p>
+                    <p><strong>买方仅需</strong>：支付进口税费（如选择含税则全包）、卸货</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('dapExplain')">了解</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：回本口径说明 -->
+    <div class="modal" id="modalPaybackExplain">
+        <div class="modal-overlay" onclick="closeModal('paybackExplain')"></div>
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>📊 两种回本口径说明</h3>
+                <button class="modal-close" onclick="closeModal('paybackExplain')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="payback-compare">
+                    <div class="payback-option">
+                        <div class="option-header total">
+                            <span class="option-icon">📊</span>
+                            <h4>总投资回本（项目资产口径）</h4>
+                        </div>
+                        <div class="option-body">
+                            <p class="option-desc">看的是：<strong>设备净成本（含落地）+ 运营成本</strong> 能否在24个月被收入覆盖，并实现毛利30%</p>
+                            <div class="option-formula">
+                                <div class="formula-item">
+                                    <span class="formula-label">落地总成本 C</span>
+                                    <span class="formula-value" id="modalTotalC">¥998,432</span>
+                                </div>
+                                <div class="formula-item">
+                                    <span class="formula-label">24个月运营成本 O</span>
+                                    <span class="formula-value" id="modalTotalO">¥216,000</span>
+                                </div>
+                                <div class="formula-item">
+                                    <span class="formula-label">残值 S</span>
+                                    <span class="formula-value" id="modalTotalS">¥400,000</span>
+                                </div>
+                                <div class="formula-item highlight">
+                                    <span class="formula-label">需收入覆盖</span>
+                                    <span class="formula-value" id="modalTotalNeed">¥814,432</span>
+                                </div>
+                            </div>
+                            <p class="option-note">✅ 适用于评估项目整体盈利能力</p>
+                        </div>
+                    </div>
+                    <div class="payback-option">
+                        <div class="option-header equity">
+                            <span class="option-icon">💰</span>
+                            <h4>自有资金回本（股权现金口径）</h4>
+                        </div>
+                        <div class="option-body">
+                            <p class="option-desc">看的是：<strong>实际掏出的现金（首付、保证金、垫付费用）</strong>何时靠净现金流回正</p>
+                            <div class="option-formula">
+                                <div class="formula-item">
+                                    <span class="formula-label">首付（融资模式）</span>
+                                    <span class="formula-value" id="modalEquityDown">¥299,530</span>
+                                </div>
+                                <div class="formula-item">
+                                    <span class="formula-label">每月：租金-还款-运营</span>
+                                    <span class="formula-value" id="modalEquityMonthly">+¥24,368</span>
+                                </div>
+                                <div class="formula-item">
+                                    <span class="formula-label">第24月：残值回收</span>
+                                    <span class="formula-value" id="modalEquityEnd">+¥400,000</span>
+                                </div>
+                                <div class="formula-item highlight">
+                                    <span class="formula-label">累计净现金流=0</span>
+                                    <span class="formula-value" id="modalEquityPayback">第12个月</span>
+                                </div>
+                            </div>
+                            <p class="option-note">✅ 适用于评估资金回收速度和杠杆效果</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="payback-tip">
+                    <strong>💡 建议</strong>：融资模式下，自有资金回本通常更快；全款模式下，两种口径差异较小。
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('paybackExplain')">了解</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗：维修规则说明 -->
+    <div class="modal" id="modalMaintenanceRules">
+        <div class="modal-overlay" onclick="closeModal('maintenanceRules')"></div>
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>🔧 维修与大修规则说明</h3>
+                <button class="modal-close" onclick="closeModal('maintenanceRules')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="maintenance-categories">
+                    <div class="maint-category">
+                        <div class="maint-header minor">
+                            <span class="maint-icon">🔩</span>
+                            <h4>小修（日常保养）</h4>
+                            <span class="maint-freq">每月预提</span>
+                        </div>
+                        <div class="maint-body">
+                            <ul class="maint-list">
+                                <li>发动机机油及滤芯更换</li>
+                                <li>液压油滤芯更换</li>
+                                <li>空气滤芯更换</li>
+                                <li>黄油润滑</li>
+                                <li>易损件更换（橡胶件、密封圈等）</li>
+                                <li>日常检修调试</li>
+                            </ul>
+                            <div class="maint-estimate">
+                                <span>建议预提：</span>
+                                <strong>¥1,500-3,000/月</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="maint-category">
+                        <div class="maint-header major">
+                            <span class="maint-icon">⚙️</span>
+                            <h4>大修（重大维修）</h4>
+                            <span class="maint-freq">按工时/月预提</span>
+                        </div>
+                        <div class="maint-body">
+                            <ul class="maint-list">
+                                <li>发动机大修（约6000工时）</li>
+                                <li>液压泵/马达大修（约4000工时）</li>
+                                <li>底盘件更换（链条/支重轮/引导轮）</li>
+                                <li>驾驶室/电气系统大修</li>
+                                <li>结构件焊接修复</li>
+                            </ul>
+                            <div class="maint-estimate">
+                                <span>建议预提：</span>
+                                <strong>¥2,000-5,000/月</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="maint-rules">
+                    <h5>📋 费用处理规则</h5>
+                    <table class="rules-table">
+                        <tr>
+                            <th>项目</th>
+                            <th>出租方</th>
+                            <th>承租方</th>
+                        </tr>
+                        <tr>
+                            <td>日常保养（机油/滤芯）</td>
+                            <td>提供首次耗材</td>
+                            <td>后续自理</td>
+                        </tr>
+                        <tr>
+                            <td>非人为故障维修</td>
+                            <td>全额承担</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>人为损坏/操作不当</td>
+                            <td>-</td>
+                            <td>全额赔偿</td>
+                        </tr>
+                        <tr>
+                            <td>大修（正常磨损）</td>
+                            <td>从预提基金支付</td>
+                            <td>-</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="maint-response">
+                    <h5>⏱️ 响应时效</h5>
+                    <div class="response-items">
+                        <div class="response-item">
+                            <span class="response-level urgent">紧急</span>
+                            <span>设备停机故障 → 4小时内响应</span>
+                        </div>
+                        <div class="response-item">
+                            <span class="response-level normal">一般</span>
+                            <span>性能下降/异常 → 24小时内响应</span>
+                        </div>
+                        <div class="response-item">
+                            <span class="response-level routine">常规</span>
+                            <span>定期保养提醒 → 提前3天预约</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('maintenanceRules')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 浮动操作按钮 -->
+    <div class="floating-actions">
+        <button class="fab" onclick="showModal('terms')" title="查看条款">📜</button>
+        <button class="fab primary" onclick="scrollToTop()" title="回到顶部">↑</button>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="pricing.js"></script>
+    <script src="ai-assistant.js"></script>
+</body>
+</html>

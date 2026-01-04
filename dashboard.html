@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据看板 - 金哲工程机械</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h1 { color: #333; }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        .coming-soon {
+            text-align: center;
+            padding: 80px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .coming-soon .icon { font-size: 64px; margin-bottom: 20px; }
+        .coming-soon h2 { color: #333; margin-bottom: 10px; }
+        .coming-soon p { color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 数据看板</h1>
+            <a href="./main.html" class="back-btn">← 返回主页</a>
+        </div>
+        <div class="coming-soon">
+            <div class="icon">🚧</div>
+            <h2>功能开发中</h2>
+            <p>数据看板（销售数据、市场趋势、库存分析）正在开发中...</p>
+        </div>
+    </div>
+</body>
+</html>

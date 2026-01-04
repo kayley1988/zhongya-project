@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能数据驱动中心 - 中亚跨境设备租售管理</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="list.css">
+    <link rel="stylesheet" href="data-enhanced.css">
+    <script src="lib/chart.min.js"></script>
+</head>
+<body>
+    <div class="fullscreen-layout">
+        <!-- 顶部导航 -->
+        <nav class="top-nav">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-icon">🤖</span>
+                    <span class="logo-text">智能数据驱动中心</span>
+                </div>
+                <div class="nav-tabs">
+                    <a href="list.html" class="nav-tab">📋 项目列表</a>
+                    <a href="pricing.html" class="nav-tab">💰 定价测算</a>
+                    <a href="fx.html" class="nav-tab">💱 汇率管理</a>
+                    <a href="data.html" class="nav-tab active">🤖 智能中心</a>
+                    <a href="settings.html" class="nav-tab">⚙️ 系统设置</a>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="nav-btn" onclick="refreshDashboard()">🔄 实时同步</button>
+            </div>
+        </nav>
+
+        <!-- AI智能状态栏 -->
+        <div class="ai-status-bar">
+            <div class="ai-status-left">
+                <span class="ai-indicator">�</span>
+                <span>AI 引擎：未配置 | 请在右下角点击🤖设置 API Key</span>
+            </div>
+            <div class="ai-status-right">
+                <span>状态: <span id="lastUpdateTime">等待配置</span></span>
+                <span style="margin-left: 20px;">分析次数: <span id="processingSpeed">0</span> 次</span>
+            </div>
+        </div>
+
+        <!-- 视图切换器 -->
+        <div class="view-switcher">
+            <button class="view-btn" onclick="switchView('table')" data-view="table">
+                📋 数据管理
+            </button>
+            <button class="view-btn" onclick="switchView('dashboard')" data-view="dashboard">
+                📊 仪表盘
+            </button>
+        </div>
+
+        <!-- 主容器 -->
+        <div class="dashboard-container">
+            <!-- 智能仪表盘视图 -->
+            <div id="dashboardView" class="view-content active">
+                <div class="dashboard-grid">
+                    <!-- AI预测卡片 -->
+                    <div class="dashboard-card ai-prediction">
+                        <div class="card-header">
+                            <h3>🤖 AI智能预测</h3>
+                            <span class="status-indicator success">实时</span>
+                        </div>
+                        <div class="ai-metrics">
+                            <div class="metric">
+                                <span class="metric-label">项目成功率预测</span>
+                                <span class="metric-value" id="successRate">0%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">收益预期</span>
+                                <span class="metric-value" id="revenuePredict">$0</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">风险评估</span>
+                                <span class="metric-value" id="riskLevel">低</span>
+                            </div>
+                        </div>
+                        <canvas id="aiTrendChart" width="300" height="120"></canvas>
+                    </div>
+
+                    <!-- 实时监控面板 -->
+                    <div class="dashboard-card realtime-monitor">
+                        <div class="card-header">
+                            <h3>📡 实时监控</h3>
+                            <span class="pulse-dot"></span>
+                        </div>
+                        <div class="monitor-grid">
+                            <div class="monitor-item">
+                                <div class="monitor-icon">📊</div>
+                                <div class="monitor-info">
+                                    <span class="monitor-label">数据处理</span>
+                                    <span class="monitor-value" id="dataProcessed">0</span>
+                                </div>
+                            </div>
+                            <div class="monitor-item">
+                                <div class="monitor-icon">⚡</div>
+                                <div class="monitor-info">
+                                    <span class="monitor-label">系统负载</span>
+                                    <span class="monitor-value" id="systemLoad">0%</span>
+                                </div>
+                            </div>
+                            <div class="monitor-item">
+                                <div class="monitor-icon">🔄</div>
+                                <div class="monitor-info">
+                                    <span class="monitor-label">同步状态</span>
+                                    <span class="monitor-value" id="syncStatus">正常</span>
+                                </div>
+                            </div>
+                            <div class="monitor-item">
+                                <div class="monitor-icon">🎯</div>
+                                <div class="monitor-info">
+                                    <span class="monitor-label">准确率</span>
+                                    <span class="monitor-value" id="accuracy">99.9%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 业务指标仪表盘 -->
+                    <div class="dashboard-card metrics-panel">
+                        <div class="card-header">
+                            <h3>📈 业务指标</h3>
+                            <div class="time-selector">
+                                <select onchange="updateMetrics(this.value)">
+                                    <option value="1h">近1小时</option>
+                                    <option value="24h" selected>近24小时</option>
+                                    <option value="7d">近7天</option>
+                                    <option value="30d">近30天</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-gauge">
+                                <canvas id="projectGauge" width="120" height="120"></canvas>
+                                <div class="gauge-label">项目进度</div>
+                            </div>
+                            <div class="metric-gauge">
+                                <canvas id="revenueGauge" width="120" height="120"></canvas>
+                                <div class="gauge-label">收益率</div>
+                            </div>
+                            <div class="metric-gauge">
+                                <canvas id="efficiencyGauge" width="120" height="120"></canvas>
+                                <div class="gauge-label">效率指标</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 数据流向图 -->
+                    <div class="dashboard-card data-flow">
+                        <div class="card-header">
+                            <h3>🌊 数据流向</h3>
+                        </div>
+                        <canvas id="dataFlowChart" width="400" height="200"></canvas>
+                    </div>
+
+                    <!-- 智能建议 -->
+                    <div class="dashboard-card ai-suggestions">
+                        <div class="card-header">
+                            <h3>💡 智能建议</h3>
+                            <span class="last-updated">等待 AI 分析</span>
+                        </div>
+                        <div class="suggestions-list" id="suggestionsList">
+                            <div class="empty-ai-state">
+                                <div class="empty-ai-icon">🤖</div>
+                                <div class="empty-ai-text">
+                                    <h4>暂无 AI 分析结果</h4>
+                                    <p>点击右下角“⚡AI分析”按钮，获取基于当前数据的智能建议</p>
+                                    <button class="btn btn-primary" onclick="triggerAIAnalysis()">🤖 开始 AI 分析</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统健康度 -->
+                    <div class="dashboard-card system-health">
+                        <div class="card-header">
+                            <h3>💚 系统健康度</h3>
+                        </div>
+                        <div class="health-score">
+                            <div class="score-circle">
+                                <span class="score-value" id="healthScore">98</span>
+                                <span class="score-unit">分</span>
+                            </div>
+                            <div class="health-details">
+                                <div class="health-item">
+                                    <span class="health-label">数据质量</span>
+                                    <div class="health-bar">
+                                        <div class="health-progress" style="width: 95%"></div>
+                                    </div>
+                                    <span class="health-value">95%</span>
+                                </div>
+                                <div class="health-item">
+                                    <span class="health-label">系统稳定性</span>
+                                    <div class="health-bar">
+                                        <div class="health-progress" style="width: 99%"></div>
+                                    </div>
+                                    <span class="health-value">99%</span>
+                                </div>
+                                <div class="health-item">
+                                    <span class="health-label">响应速度</span>
+                                    <div class="health-bar">
+                                        <div class="health-progress" style="width: 88%"></div>
+                                    </div>
+                                    <span class="health-value">88%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 甘特图视图 -->
+            <div id="ganttView" class="view-content">
+                <div class="gantt-container">
+                    <div class="gantt-header">
+                        <h2>📅 项目甘特图</h2>
+                        <div class="gantt-controls">
+                            <button class="gantt-btn" onclick="adjustTimeScale('day')">日视图</button>
+                            <button class="gantt-btn active" onclick="adjustTimeScale('week')">周视图</button>
+                            <button class="gantt-btn" onclick="adjustTimeScale('month')">月视图</button>
+                            <button class="gantt-btn" onclick="exportGantt()">📥 导出</button>
+                        </div>
+                    </div>
+                    <div class="gantt-chart" id="ganttChart">
+                        <!-- 甘特图会动态生成 -->
+                        <div class="gantt-timeline">
+                            <div class="timeline-header" id="timelineHeader"></div>
+                            <div class="timeline-body" id="timelineBody"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 卡片视图 -->
+            <div id="cardsView" class="view-content">
+                <div class="cards-container">
+                    <div class="cards-header">
+                        <h2>🎴 项目卡片视图</h2>
+                        <div class="cards-filters">
+                            <select onchange="filterCards(this.value)">
+                                <option value="all">全部项目</option>
+                                <option value="active">进行中</option>
+                                <option value="completed">已完成</option>
+                                <option value="pending">待开始</option>
+                            </select>
+                            <button class="cards-btn" onclick="addNewCard()">➕ 新建项目</button>
+                        </div>
+                    </div>
+                    <div class="cards-grid" id="cardsGrid">
+                        <!-- 项目卡片 -->
+                        <div class="project-card active">
+                            <div class="card-status">进行中</div>
+                            <div class="card-content">
+                                <h3 class="card-title">哈萨克斯坦基建项目A</h3>
+                                <p class="card-description">大型挖掘设备租赁，预计工期6个月</p>
+                                <div class="card-metrics">
+                                    <div class="card-metric">
+                                        <span class="metric-label">进度</span>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 65%"></div>
+                                        </div>
+                                        <span class="metric-value">65%</span>
+                                    </div>
+                                    <div class="card-metric">
+                                        <span class="metric-label">收益</span>
+                                        <span class="metric-value text-success">+$125,000</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="card-team">
+                                        <span class="team-member">👤</span>
+                                        <span class="team-member">👤</span>
+                                        <span class="team-member">👤</span>
+                                    </div>
+                                    <div class="card-deadline">截止: 2025-06-15</div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn">📊 详情</button>
+                                <button class="action-btn">✏️ 编辑</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据表格视图 -->
+            <div id="tableView" class="view-content">
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2>📋 数据表格管理</h2>
+                        <div class="table-controls">
+                            <div class="control-group">
+                                <select onchange="switchDataTable(this.value)">
+                                    <option value="projects">项目数据</option>
+                                    <option value="customers">客户数据</option>
+                                    <option value="equipments">设备库</option>
+                                    <option value="fxRates">汇率数据</option>
+                                    <option value="taxRules">税率规则</option>
+                                    <option value="costTemplates">成本模板</option>
+                                </select>
+                                <input type="text" id="searchInput" placeholder="搜索..." oninput="searchData()" style="margin-left:10px; padding:8px; border:1px solid #ddd; border-radius:4px;">
+                            </div>
+                            <div class="control-group">
+                                <span id="tableCount">0 条记录</span>
+                                <button class="table-btn" onclick="openAddModal()">➕ 新增</button>
+                                <button class="table-btn" onclick="batchDelete()">🗑️ 批量删除</button>
+                                <button class="table-btn" onclick="importData()">📤 导入</button>
+                                <button class="table-btn" onclick="exportCurrentTable()">📥 导出</button>
+                                <button class="table-btn" onclick="refreshTable()">🔄 刷新</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <table class="data-table" id="dataTable">
+                            <thead id="tableHead"></thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 浮动操作按钮 -->
+    <div class="fab-container">
+        <button class="fab" onclick="toggleFabMenu()">⚡</button>
+        <div class="fab-menu" id="fabMenu">
+            <button class="fab-item" onclick="triggerAIAnalysis()">🤖 AI分析</button>
+            <button class="fab-item" onclick="refreshAllData()">🔄 全量同步</button>
+            <button class="fab-item" onclick="openSettings()">⚙️ 设置</button>
+        </div>
+    </div>
+
+    <!-- 编辑数据弹窗 -->
+    <div class="modal-overlay" id="editModal" style="display:none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">编辑数据</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 动态生成表单 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeEditModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveData()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入数据弹窗 -->
+    <div class="modal-overlay" id="importModal" style="display:none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>📤 导入数据</h3>
+                <button class="modal-close" onclick="closeImportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>选择文件（支持 JSON/CSV）</label>
+                    <input type="file" id="fileInput" accept=".json,.csv" onchange="handleFileSelect(event)">
+                </div>
+                <div id="importPreview" style="display:none;">
+                    <h4>预览</h4>
+                    <div id="previewTable"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeImportModal()">取消</button>
+                <button class="btn btn-primary" id="confirmImportBtn" onclick="confirmImport()" disabled>确认导入</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 容器 -->
+    <div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:10000;"></div>
+
+    <style>
+        /* 仪表盘网格布局 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+        
+        /* 表格控件布局 */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* 内联编辑样式 */
+        .inline-edit-input {
+            width: 100%;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: inherit;
+            background: white;
+            outline: none;
+        }
+        .inline-edit-input:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 表格计数显示 */
+        #tableCount {
+            color: #a0aec0;
+            font-size: 0.9em;
+        }
+
+        /* 模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: #333;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            background: #f8f9fa;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+        
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-cancel:hover {
+            background: #cbd5e0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .required {
+            color: red;
+        }
+        
+        /* AI 空状态样式 */
+        .empty-ai-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a0aec0;
+        }
+        .empty-ai-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .empty-ai-text h4 {
+            color: #e0e7ff;
+            margin-bottom: 8px;
+        }
+        .empty-ai-text p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* 仪表盘卡片样式 */
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.1em;
+            color: #e0e7ff;
+        }
+
+        .status-indicator {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .status-indicator.success {
+            background: #10b981;
+            color: white;
+        }
+
+        /* AI预测卡片 */
+        .ai-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.8em;
+            color: #9ca3af;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        /* 实时监控面板 */
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .monitor-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+
+        .monitor-icon {
+            font-size: 1.5em;
+        }
+
+        .monitor-info {
+            flex: 1;
+        }
+
+        .monitor-label {
+            display: block;
+            font-size: 0.8em;
+            color: #9ca3af;
+        }
+
+        .monitor-value {
+            display: block;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: white;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* 业务指标仪表盘 */
+        .metrics-grid {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .metric-gauge {
+            text-align: center;
+        }
+
+        .gauge-label {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #9ca3af;
+        }
+
+        /* 智能建议 */
+        .suggestions-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+
+        .suggestion-item.priority-high {
+            border-left-color: #ef4444;
+        }
+
+        .suggestion-item.priority-medium {
+            border-left-color: #f59e0b;
+        }
+
+        .suggestion-content {
+            flex: 1;
+        }
+
+        .suggestion-title {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .suggestion-text {
+            font-size: 0.9em;
+            color: #9ca3af;
+        }
+
+        .suggestion-action {
+            padding: 5px 10px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        /* 系统健康度 */
+        .health-score {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(#10b981 0deg, #10b981 352deg, #374151 352deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-circle::before {
+            content: '';
+            width: 60px;
+            height: 60px;
+            background: #1f2937;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .score-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: white;
+            z-index: 1;
+        }
+
+        .score-unit {
+            font-size: 0.8em;
+            color: #9ca3af;
+            z-index: 1;
+        }
+
+        .health-details {
+            flex: 1;
+        }
+
+        .health-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .health-label {
+            width: 80px;
+            font-size: 0.8em;
+            color: #9ca3af;
+        }
+
+        .health-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .health-progress {
+            height: 100%;
+            background: #10b981;
+            transition: width 0.3s;
+        }
+
+        .health-value {
+            width: 40px;
+            text-align: right;
+            font-size: 0.8em;
+            color: white;
+        }
+
+        /* 视图内容 */
+        .view-content {
+            display: none;
+            flex: 1;
+        }
+
+        .view-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 甘特图样式 */
+        .gantt-container {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .gantt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .gantt-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .gantt-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gantt-btn.active, .gantt-btn:hover {
+            background: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        /* 卡片视图样式 */
+        .cards-container {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .cards-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 8px;
+            background: #10b981;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .card-description {
+            color: #9ca3af;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            transition: width 0.3s;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-team {
+            display: flex;
+            gap: 5px;
+        }
+
+        .team-member {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+
+        .card-deadline {
+            font-size: 0.8em;
+            color: #9ca3af;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            background: transparent;
+            color: #60a5fa;
+            border: 1px solid #60a5fa;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8em;
+        }
+
+        .action-btn:hover {
+            background: #60a5fa;
+            color: white;
+        }
+
+        /* 表格视图 */
+        .table-container {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .table-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 浮动操作按钮 */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .fab-menu {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .fab-menu.active {
+            display: flex;
+        }
+
+        .fab-item {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1f2937;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .fab-item:hover {
+            background: white;
+            transform: translateX(-5px);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // 全局变量
+        let currentView = 'dashboard';
+        let dashboardData = {};
+        let updateInterval;
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            startRealTimeUpdates();
+            loadData();
+        });
+
+        // 初始化仪表盘
+        function initializeDashboard() {
+            updateAIStatus();
+            initializeCharts();
+            loadAIMetrics();
+        }
+
+        // 切换视图
+        function switchView(viewName) {
+            // 更新按钮状态
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+
+            // 切换内容
+            document.querySelectorAll('.view-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(viewName + 'View').classList.add('active');
+
+            currentView = viewName;
+
+            // 根据视图加载相应数据
+            switch(viewName) {
+                case 'dashboard':
+                    updateDashboard();
+                    break;
+                case 'gantt':
+                    loadGanttChart();
+                    break;
+                case 'cards':
+                    loadProjectCards();
+                    break;
+                case 'table':
+                    loadDataTable();
+                    break;
+            }
+        }
+
+        // 更新AI状态
+        function updateAIStatus() {
+            const now = new Date();
+            document.getElementById('lastUpdateTime').textContent = 
+                now.toLocaleTimeString('zh-CN', { hour12: false });
+            
+            const speed = Math.floor(Math.random() * 50) + 150;
+            document.getElementById('processingSpeed').textContent = speed;
+        }
+
+        // 开始实时更新
+        function startRealTimeUpdates() {
+            updateInterval = setInterval(() => {
+                updateAIStatus();
+                updateRealTimeMetrics();
+            }, 5000);
+        }
+
+        // 更新实时指标
+        function updateRealTimeMetrics() {
+            // 模拟实时数据更新
+            document.getElementById('dataProcessed').textContent = 
+                Math.floor(Math.random() * 10000) + 50000;
+            document.getElementById('systemLoad').textContent = 
+                Math.floor(Math.random() * 30) + 15 + '%';
+            document.getElementById('accuracy').textContent = 
+                (99.5 + Math.random() * 0.4).toFixed(1) + '%';
+        }
+
+        // 初始化图表
+        function initializeCharts() {
+            // 这里可以初始化各种图表
+            // 使用 Chart.js 或其他图表库
+        }
+
+        // 加载AI指标
+        function loadAIMetrics() {
+            document.getElementById('successRate').textContent = '89.2%';
+            document.getElementById('revenuePredict').textContent = '$1.2M';
+            document.getElementById('riskLevel').textContent = '低';
+        }
+
+        // 更新仪表盘
+        function updateDashboard() {
+            loadAIMetrics();
+            updateRealTimeMetrics();
+        }
+
+        // 加载甘特图
+        function loadGanttChart() {
+            // 生成甘特图
+            const ganttChart = document.getElementById('ganttChart');
+            // 这里添加甘特图生成逻辑
+        }
+
+        // 加载项目卡片
+        function loadProjectCards() {
+            // 生成项目卡片
+            const cardsGrid = document.getElementById('cardsGrid');
+            // 这里添加卡片生成逻辑
+        }
+
+        // 加载数据表格
+        function loadDataTable() {
+            // 加载数据表格
+            // 这里添加表格数据加载逻辑
+        }
+
+        // 浮动菜单切换
+        function toggleFabMenu() {
+            const fabMenu = document.getElementById('fabMenu');
+            fabMenu.classList.toggle('active');
+        }
+
+        // AI分析触发：将当前表格数据发送到 AI 助手进行分析
+        async function triggerAIAnalysis() {
+            try {
+                const tableKey = dataState.currentTable || 'projects';
+                const cfg = DATA_TABLES[tableKey] || { name: tableKey };
+                const tableData = (window.DataCenter && await window.DataCenter.getData(tableKey)) || (dataState.data[tableKey] || []);
+                const sample = Array.isArray(tableData) ? tableData.slice(0, 50) : tableData;
+
+                const prompt = `请基于当前系统中「${cfg.name}」的数据进行分析：\n` +
+                    `（下面显示最多前50条数据示例）\n${JSON.stringify(sample, null, 2)}\n` +
+                    `请给出关键指标摘要、潜在风险和可执行的优化建议。`; 
+
+                const aiInput = document.getElementById('aiInput');
+                if (aiInput) aiInput.value = prompt;
+
+                if (typeof AIAssistant !== 'undefined') {
+                    // 更新 AI 状态为配置完成
+                    updateAIStatus();
+                    AIAssistant.sendMessage();
+                } else {
+                    alert('AI 助手未就绪，请先在右下角打开 AI 设置并配置 API Key。');
+                }
+            } catch (err) {
+                console.error('触发 AI 分析失败:', err);
+                alert('触发 AI 分析失败: ' + err.message);
+            }
+        }
+
+        // 更新 AI 状态显示
+        function updateAIStatus() {
+            const indicator = document.querySelector('.ai-indicator');
+            const statusText = document.querySelector('.ai-status-left span:last-child');
+            const lastUpdate = document.getElementById('lastUpdateTime');
+            const processingSpeed = document.getElementById('processingSpeed');
+
+            if (typeof AIAssistant !== 'undefined' && AIAssistant.config.apiKey) {
+                if (indicator) indicator.textContent = '🟢';
+                if (statusText) statusText.textContent = `AI 引擎: ${AIAssistant.config.apiType} | 模型: ${AIAssistant.config.model} | 状态: 已配置`;
+                if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
+                
+                // 增加使用次数
+                let count = parseInt(localStorage.getItem('ai_usage_count') || '0');
+                count++;
+                localStorage.setItem('ai_usage_count', count.toString());
+                if (processingSpeed) processingSpeed.textContent = count;
+            } else {
+                if (indicator) indicator.textContent = '🔴';
+                if (statusText) statusText.textContent = 'AI 引擎：未配置 | 请在右下角点击🤖设置 API Key';
+                if (lastUpdate) lastUpdate.textContent = '等待配置';
+                if (processingSpeed) processingSpeed.textContent = '0';
+            }
+        }
+
+        // 页面加载时检查 AI 状态
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAIStatus();
+            // 定期检查 AI 配置状态
+            setInterval(updateAIStatus, 5000);
+        });
+
+        // 刷新所有数据
+        function refreshAllData() {
+            alert('正在刷新所有数据...');
+        }
+
+        // 打开设置
+        function openSettings() {
+            window.location.href = 'settings.html';
+        }
+
+        // 刷新仪表盘
+        function refreshDashboard() {
+            updateDashboard();
+            alert('仪表盘数据已刷新');
+        }
+
+        // 其他辅助函数
+        function loadData() {
+            // 加载基础数据
+        }
+
+    <!-- 添加设备弹窗 -->
+    <div class="modal-overlay" id="addEquipmentModal">
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>🔧 添加自定义设备</h3>
+                <button class="modal-close" onclick="closeAddEquipmentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="equipmentForm">
+                    <div class="form-section">
+                        <h4>📋 基本信息</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="equipmentType">设备类型</label>
+                                <select id="equipmentType" onchange="handleEquipmentTypeChange()">
+                                    <option value="挖掘机">挖掘机</option>
+                                    <option value="推土机">推土机</option>
+                                    <option value="装载机">装载机</option>
+                                    <option value="起重机">起重机</option>
+                                    <option value="压路机">压路机</option>
+                                    <option value="钻机">钻机</option>
+                                    <option value="清扫土设备">清扫土设备</option>
+                                    <option value="其他设备">其他设备</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="customEquipmentName" style="display:none;">
+                                <label for="customName">自定义设备名称 *</label>
+                                <input type="text" id="customName" placeholder="请输入设备名称...">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="equipmentModel">设备型号/规格</label>
+                                <input type="text" id="equipmentModel" placeholder="如：CAT320、小松PC200等">
+                            </div>
+                            <div class="form-group">
+                                <label for="equipmentBrand">品牌</label>
+                                <input type="text" id="equipmentBrand" placeholder="如：卡特彼勒、小松、三一等">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>💰 租赁信息</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dailyRate">日租金（元）</label>
+                                <input type="number" id="dailyRate" placeholder="0" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="monthlyRate">月租金（元）</label>
+                                <input type="number" id="monthlyRate" placeholder="0" min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="operatorCost">操作员费用（元/日）</label>
+                                <input type="number" id="operatorCost" placeholder="0" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="fuelCost">燃料费（元/日）</label>
+                                <input type="number" id="fuelCost" placeholder="0" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>🔧 技术参数</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="enginePower">发动机功率（kW）</label>
+                                <input type="number" id="enginePower" placeholder="0" min="0" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="operatingWeight">工作重量（吨）</label>
+                                <input type="number" id="operatingWeight" placeholder="0" min="0" step="0.1">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="maxDiggingDepth">最大挖掘深度（米）</label>
+                                <input type="number" id="maxDiggingDepth" placeholder="0" min="0" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="bucketCapacity">铲斗容量（m³）</label>
+                                <input type="number" id="bucketCapacity" placeholder="0" min="0" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>📍 可用区域</h4>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label>适用国家/地区</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="region" value="哈萨克斯坦"> 哈萨克斯坦
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="region" value="乌兹别克斯坦"> 乌兹别克斯坦
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="region" value="吉尔吉斯斯坦"> 吉尔吉斯斯坦
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="region" value="塔吉克斯坦"> 塔吉克斯坦
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="region" value="土库曼斯坦"> 土库曼斯坦
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>📝 备注信息</h4>
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="equipmentNotes">设备备注</label>
+                                <textarea id="equipmentNotes" rows="3" placeholder="设备特殊要求、维护说明等..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeAddEquipmentModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveCustomEquipment()">💾 保存设备</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要脚本 -->
+    <script src="db.js"></script>
+    <script src="data-enhanced.js"></script>
+</body>
+</html>

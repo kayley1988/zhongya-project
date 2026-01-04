@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多网站价格爬虫系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #999;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .sources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .source-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .source-item::before {
+            content: '🌐';
+            font-size: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-crawl {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .btn-crawl:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-crawl:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s;
+            width: 0%;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-export {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-clear {
+            background: #FF5722;
+            color: white;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn-action:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .data-preview {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .data-preview h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .data-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .data-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .data-item-body {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .alert strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .alert ol {
+            margin-left: 20px;
+        }
+
+        .alert li {
+            margin: 5px 0;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 多网站价格爬虫系统</h1>
+        <p class="subtitle">一键打开多个网站并自动爬取价格数据</p>
+
+        <div class="sources" id="sourcesList"></div>
+
+        <div class="input-group">
+            <label for="keyword">🔍 设备型号</label>
+            <input 
+                type="text" 
+                id="keyword" 
+                placeholder="例如: XGC88000, 卡特320D, 沃尔沃EC210B" 
+                value="XGC88000"
+            >
+        </div>
+
+        <button class="btn-crawl" onclick="startCrawl()" id="crawlBtn">
+            ⚡ 开始爬取（自动打开所有网站）
+        </button>
+
+        <div class="status-panel">
+            <div class="status-row">
+                <span class="status-label">网站数量</span>
+                <span class="status-value" id="totalCount">0</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">已完成</span>
+                <span class="status-value" id="completedCount">0</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-action btn-export" onclick="exportData()" id="exportBtn" disabled>
+                📊 导出Excel
+            </button>
+            <button class="btn-action btn-clear" onclick="clearData()" id="clearBtn">
+                🗑️ 清空数据
+            </button>
+        </div>
+
+        <div class="data-preview">
+            <h3>📋 爬取数据预览</h3>
+            <div id="dataList">暂无数据</div>
+        </div>
+
+        <div class="alert">
+            <strong>📖 使用说明：</strong>
+            <ol>
+                <li>确保已安装油猴脚本 <code>machinery-multi-crawler.user.js</code></li>
+                <li>输入设备型号（如 XGC88000）</li>
+                <li>点击"开始爬取"会自动打开4-5个网站的搜索页面</li>
+                <li>等待所有页面加载并自动提取数据（约10-15秒）</li>
+                <li>页面会自动关闭，数据回传到这里</li>
+                <li>点击"导出Excel"下载完整数据表格</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let checkInterval = null;
+
+        // 初始化
+        window.addEventListener('load', () => {
+            if (!window.MultiCrawler) {
+                showToast('❌ 油猴脚本未加载！请安装 machinery-multi-crawler.user.js', 'error');
+                return;
+            }
+
+            // 显示数据源
+            const sources = window.MultiCrawler.getSources();
+            const sourcesList = document.getElementById('sourcesList');
+            sourcesList.innerHTML = sources.map(s => 
+                `<div class="source-item">${s.name}</div>`
+            ).join('');
+
+            document.getElementById('totalCount').textContent = sources.length;
+
+            // 检查是否有旧数据
+            updateStatus();
+        });
+
+        // 开始爬取
+        async function startCrawl() {
+            const keyword = document.getElementById('keyword').value.trim();
+            if (!keyword) {
+                showToast('❌ 请输入设备型号', 'error');
+                return;
+            }
+
+            if (!window.MultiCrawler) {
+                showToast('❌ 油猴脚本未加载', 'error');
+                return;
+            }
+
+            // 清空旧数据
+            window.MultiCrawler.clear();
+            document.getElementById('dataList').innerHTML = '正在爬取...';
+
+            // 打开所有网站
+            const result = window.MultiCrawler.openAll(keyword);
+            
+            if (result.success) {
+                showToast(`✅ 已打开${result.count}个网站，正在爬取数据...`);
+                
+                // 禁用按钮
+                document.getElementById('crawlBtn').disabled = true;
+                document.getElementById('crawlBtn').innerHTML = '⏳ 正在爬取中...<span class="loading"></span>';
+
+                // 开始轮询检查数据
+                startChecking();
+            } else {
+                showToast('❌ 打开失败', 'error');
+            }
+        }
+
+        // 开始检查数据
+        function startChecking() {
+            if (checkInterval) clearInterval(checkInterval);
+            
+            checkInterval = setInterval(() => {
+                updateStatus();
+                
+                const status = window.MultiCrawler.getStatus();
+                if (status.completed >= status.total && status.completed > 0) {
+                    // 完成
+                    clearInterval(checkInterval);
+                    document.getElementById('crawlBtn').disabled = false;
+                    document.getElementById('crawlBtn').innerHTML = '⚡ 开始爬取（自动打开所有网站）';
+                    showToast(`✅ 爬取完成！共获取${status.completed}条数据`);
+                }
+            }, 1000); // 每秒检查一次
+
+            // 30秒后停止检查
+            setTimeout(() => {
+                if (checkInterval) {
+                    clearInterval(checkInterval);
+                    document.getElementById('crawlBtn').disabled = false;
+                    document.getElementById('crawlBtn').innerHTML = '⚡ 开始爬取（自动打开所有网站）';
+                }
+            }, 30000);
+        }
+
+        // 更新状态
+        function updateStatus() {
+            if (!window.MultiCrawler) return;
+
+            const status = window.MultiCrawler.getStatus();
+            const data = status.data || [];
+
+            document.getElementById('completedCount').textContent = status.completed;
+            
+            // 更新进度条
+            const progress = status.total > 0 ? (status.completed / status.total * 100) : 0;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            // 更新按钮状态
+            document.getElementById('exportBtn').disabled = data.length === 0;
+
+            // 更新数据预览
+            if (data.length > 0) {
+                const dataList = document.getElementById('dataList');
+                dataList.innerHTML = data.map((item, index) => `
+                    <div class="data-item">
+                        <div class="data-item-header">
+                            <span>${index + 1}. ${item.来源网站}</span>
+                            <span>${item.爬取时间}</span>
+                        </div>
+                        <div class="data-item-body">
+                            型号: ${item.关键词} | 类型: ${item.设备类型} | 品牌: ${item.品牌}<br>
+                            ${item['新机价格'] ? '新机价格: ' + item['新机价格'] : ''}
+                            ${item['参考价格'] ? '参考价格: ' + item['参考价格'] : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('dataList').innerHTML = '暂无数据';
+            }
+        }
+
+        // 导出Excel
+        async function exportData() {
+            if (!window.MultiCrawler) return;
+
+            const keyword = document.getElementById('keyword').value.trim() || '数据';
+            const result = await window.MultiCrawler.exportExcel(`${keyword}_价格汇总.xlsx`);
+
+            if (result.success) {
+                showToast(`✅ Excel已导出！共${result.count}条数据`);
+            } else {
+                showToast('❌ 导出失败: ' + result.message, 'error');
+            }
+        }
+
+        // 清空数据
+        function clearData() {
+            if (!window.MultiCrawler) return;
+
+            if (confirm('确定要清空所有数据吗？')) {
+                window.MultiCrawler.clear();
+                updateStatus();
+                showToast('🗑️ 数据已清空');
+            }
+        }
+
+        // 显示提示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            toast.style.background = type === 'error' ? '#f44336' : '#4CAF50';
+
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // 定期更新状态
+        setInterval(updateStatus, 2000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄语学习 - 金哲工程机械</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h1 { color: #333; }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        .vocab-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .vocab-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #9b59b6;
+        }
+        .vocab-card .russian { font-size: 20px; color: #333; margin-bottom: 5px; }
+        .vocab-card .chinese { font-size: 16px; color: #666; margin-bottom: 5px; }
+        .vocab-card .example { font-size: 13px; color: #999; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇷🇺 俄语学习 - 工程机械专业词汇</h1>
+            <a href="./main.html" class="back-btn">← 返回主页</a>
+        </div>
+        
+        <div class="vocab-list">
+            <div class="vocab-card">
+                <div class="russian">Гусеничный кран</div>
+                <div class="chinese">履带起重机</div>
+                <div class="example">Crawler Crane</div>
+            </div>
+            <div class="vocab-card">
+                <div class="russian">Экскаватор</div>
+                <div class="chinese">挖掘机</div>
+                <div class="example">Excavator</div>
+            </div>
+            <div class="vocab-card">
+                <div class="russian">Бульдозер</div>
+                <div class="chinese">推土机</div>
+                <div class="example">Bulldozer</div>
+            </div>
+            <div class="vocab-card">
+                <div class="russian">Погрузчик</div>
+                <div class="chinese">装载机</div>
+                <div class="example">Loader</div>
+            </div>
+            <div class="vocab-card">
+                <div class="russian">Грузоподъёмность</div>
+                <div class="chinese">起重能力</div>
+                <div class="example">Lifting Capacity</div>
+            </div>
+            <div class="vocab-card">
+                <div class="russian">Гидравлическая система</div>
+                <div class="chinese">液压系统</div>
+                <div class="example">Hydraulic System</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

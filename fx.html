@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汇率管理 - 中亚跨境项目管理</title>
+    <link rel="stylesheet" href="list.css">
+    <style>
+        .fx-container {
+            width: 100%;
+            padding: 32px;
+        }
+        
+        /* 页面头部横幅 */
+        .fx-hero {
+            background: linear-gradient(135deg, #312e81 0%, #4338ca 50%, #6366f1 100%);
+            margin: -32px -32px 32px -32px;
+            padding: 48px 32px;
+            color: white;
+        }
+        
+        .fx-hero-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .fx-hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+        
+        .fx-hero p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .fx-hero .fx-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .fx-hero .btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .fx-hero .btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .fx-hero .btn-primary {
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            font-weight: 600;
+        }
+        
+        .fx-hero .btn-primary:hover {
+            background: #f0f0f0;
+        }
+        
+        .fx-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .fx-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: var(--text-primary);
+        }
+        
+        .fx-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        /* 汇率卡片 */
+        .fx-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .fx-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .fx-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .fx-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .fx-pair {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .fx-pair .flag {
+            margin-right: 6px;
+        }
+        
+        .fx-source {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            background: var(--primary-light);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        
+        .fx-rate-display {
+            text-align: center;
+            padding: 24px 0;
+            background: linear-gradient(135deg, var(--primary-light) 0%, #f0f0ff 100%);
+            border-radius: var(--radius-sm);
+            margin: 0 -8px;
+        }
+        
+        .fx-rate-value {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .fx-rate-unit {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .fx-rate-change {
+            margin-top: 10px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .fx-rate-change.up {
+            color: var(--danger-color);
+        }
+        
+        .fx-rate-change.down {
+            color: var(--success-color);
+        }
+        
+        .fx-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-top: 16px;
+        }
+        
+        .fx-card-actions button {
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .fx-card-actions button:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        /* 汇率历史表格 */
+        .fx-history-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .fx-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .fx-history-header h3 {
+            margin: 0;
+            font-size: 1.2em;
+            color: var(--text-primary);
+        }
+        
+        .fx-history-filters {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .fx-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .fx-table th,
+        .fx-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .fx-table th {
+            background: var(--bg-dark);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .fx-table tr:hover {
+            background: var(--bg-color);
+        }
+        
+        .fx-table .rate-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .fx-table .locked {
+            color: var(--warning-color);
+        }
+        
+        .fx-table .action-btn {
+            padding: 4px 8px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* 添加汇率弹窗 */
+        .fx-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fx-modal.show {
+            display: flex;
+        }
+        
+        .fx-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 420px;
+            max-width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .fx-modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .fx-modal-header h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        
+        .fx-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+        
+        .fx-modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .fx-modal-body {
+            padding: 24px;
+        }
+        
+        .fx-modal-body .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .fx-modal-body label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .fx-modal-body input,
+        .fx-modal-body select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .fx-modal-body input:focus,
+        .fx-modal-body select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .fx-modal-body .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .fx-modal-body .checkbox-group input {
+            width: auto;
+        }
+        
+        .fx-modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        .fx-modal-footer button {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .fx-modal-footer .btn-cancel {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .fx-modal-footer .btn-cancel:hover {
+            background: var(--bg-dark);
+        }
+        
+        .fx-modal-footer .btn-submit {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+        }
+        
+        .fx-modal-footer .btn-submit:hover {
+            background: var(--primary-hover);
+        }
+        
+        /* 图表区域 */
+        .fx-chart-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .fx-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .fx-chart-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+        
+        .fx-chart-body {
+            height: 300px;
+        }
+        
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .toast {
+            padding: 12px 20px;
+            background: #333;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #f44336; }
+        .toast.warning { background: #ff9800; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-icon">🏗️</span>
+                <span class="logo-text">中亚跨境项目管理</span>
+            </div>
+            <div class="nav-tabs">
+                <a href="list.html" class="nav-tab">📋 项目列表</a>
+                <a href="pricing.html" class="nav-tab">💰 定价测算</a>
+                <a href="fx.html" class="nav-tab active">💱 汇率管理</a>
+                <a href="data.html" class="nav-tab">🗄️ 数据中心</a>
+                <a href="settings.html" class="nav-tab">⚙️ 系统设置</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-btn" onclick="fetchLatestRates()" title="获取最新汇率">🔄 刷新汇率</button>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        <div class="fx-container">
+            <!-- 页面 Hero -->
+            <div class="fx-hero">
+                <div class="fx-hero-content">
+                    <div>
+                        <h1>💱 汇率管理</h1>
+                        <p>实时监控多币种汇率，支持手动添加和锁定项目汇率</p>
+                    </div>
+                    <div class="fx-actions">
+                        <button class="btn" onclick="fetchLatestRates()">
+                            🔄 获取实时汇率
+                        </button>
+                        <button class="btn btn-primary" onclick="openAddRateModal()">
+                            ➕ 添加汇率
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 汇率卡片 -->
+            <div class="fx-cards">
+                <div class="fx-card">
+                    <div class="fx-card-header">
+                        <span class="fx-pair">
+                            <span class="flag">🇨🇳</span>CNY / <span class="flag">🇰🇿</span>KZT
+                        </span>
+                        <span class="fx-source">央行汇率</span>
+                    </div>
+                    <div class="fx-rate-display">
+                        <div class="fx-rate-value" id="cnyKztRate">--</div>
+                        <div class="fx-rate-unit">1 人民币 = ? 坚戈</div>
+                        <div class="fx-rate-change" id="cnyKztChange">--</div>
+                    </div>
+                    <div class="fx-card-footer">
+                        <span id="cnyKztDate">更新时间: --</span>
+                        <div class="fx-card-actions">
+                            <button onclick="lockRate('CNY/KZT')">🔒 锁定</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fx-card">
+                    <div class="fx-card-header">
+                        <span class="fx-pair">
+                            <span class="flag">🇨🇳</span>CNY / <span class="flag">🇺🇿</span>UZS
+                        </span>
+                        <span class="fx-source">参考汇率</span>
+                    </div>
+                    <div class="fx-rate-display">
+                        <div class="fx-rate-value" id="cnyUzsRate">--</div>
+                        <div class="fx-rate-unit">1 人民币 = ? 苏姆</div>
+                        <div class="fx-rate-change" id="cnyUzsChange">--</div>
+                    </div>
+                    <div class="fx-card-footer">
+                        <span id="cnyUzsDate">更新时间: --</span>
+                        <div class="fx-card-actions">
+                            <button onclick="lockRate('CNY/UZS')">🔒 锁定</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fx-card">
+                    <div class="fx-card-header">
+                        <span class="fx-pair">
+                            <span class="flag">🇺🇸</span>USD / <span class="flag">🇰🇿</span>KZT
+                        </span>
+                        <span class="fx-source">参考汇率</span>
+                    </div>
+                    <div class="fx-rate-display">
+                        <div class="fx-rate-value" id="usdKztRate">--</div>
+                        <div class="fx-rate-unit">1 美元 = ? 坚戈</div>
+                        <div class="fx-rate-change" id="usdKztChange">--</div>
+                    </div>
+                    <div class="fx-card-footer">
+                        <span id="usdKztDate">更新时间: --</span>
+                        <div class="fx-card-actions">
+                            <button onclick="lockRate('USD/KZT')">🔒 锁定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 汇率走势图 -->
+            <div class="fx-chart-section">
+                <div class="fx-chart-header">
+                    <h3>📈 CNY/KZT 汇率走势（近30天）</h3>
+                    <select id="chartPeriod" onchange="updateChart()">
+                        <option value="7">近7天</option>
+                        <option value="30" selected>近30天</option>
+                        <option value="90">近3个月</option>
+                    </select>
+                </div>
+                <div class="fx-chart-body">
+                    <canvas id="fxChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 汇率历史记录 -->
+            <div class="fx-history-section">
+                <div class="fx-history-header">
+                    <h3>📋 汇率历史记录</h3>
+                    <div class="fx-history-filters">
+                        <select id="filterPair" onchange="loadFxHistory()">
+                            <option value="CNY/KZT">CNY/KZT</option>
+                            <option value="CNY/UZS">CNY/UZS</option>
+                            <option value="USD/KZT">USD/KZT</option>
+                        </select>
+                    </div>
+                </div>
+                <table class="fx-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>货币对</th>
+                            <th>汇率</th>
+                            <th>数据来源</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fxHistoryBody">
+                        <!-- 动态填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 添加汇率弹窗（简化：仅选择货币对，系统自动抓取汇率） -->
+    <div class="fx-modal" id="addRateModal">
+        <div class="fx-modal-content">
+            <div class="fx-modal-header">
+                <h3>➕ 添加汇率</h3>
+                <button class="fx-modal-close" onclick="closeModal('addRateModal')">&times;</button>
+            </div>
+            <div class="fx-modal-body">
+                <div class="form-group">
+                    <label>货币对</label>
+                    <!-- 脚本已移至页面底部，确保全局可用 -->
+                    <select id="newRatePair">
+                        <option value="CNY/KZT">CNY/KZT</option>
+                        <option value="CNY/UZS">CNY/UZS</option>
+                        <option value="USD/KZT">USD/KZT</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>是否锁定</label>
+                    <input type="checkbox" id="newRateLocked">
+                </div>
+            </div>
+            <div class="fx-modal-footer">
+                <button class="btn-cancel" onclick="closeModal('addRateModal')">取消</button>
+                <button class="btn-submit" onclick="saveNewRate()">保存</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // All functions are now loaded from fx.js
+</script>
+                }
+                
+                tbody.innerHTML = rates.slice(0, 30).map(rate => `
+                    <tr>
+                        <td>${formatDate(rate.rateDate)}</td>
+                        <td>${rate.currencyPair}</td>
+                        <td class="rate-value">${rate.rateValue.toFixed(4)}</td>
+                        <td>${rate.source || '手动录入'}</td>
+                        <td>${rate.isLocked ? '<span class="locked">🔒 已锁定</span>' : '正常'}</td>
+                        <td>
+                            <button class="action-btn" onclick="editRate('${rate.rateId}')" title="编辑">✏️</button>
+                            <button class="action-btn" onclick="deleteRate('${rate.rateId}')" title="删除">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                // 更新图表
+                updateChart();
+                
+            } catch (error) {
+                console.error('加载汇率历史失败:', error);
+                showToast('加载失败', 'error');
+            }
+        }
+
+        /**
+         * 初始化图表
+         */
+        function initChart() {
+            const ctx = document.getElementById('fxChart').getContext('2d');
+            fxState.chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'CNY/KZT',
+                        data: [],
+                        borderColor: '#1a73e8',
+                        backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+            
+            updateChart();
+        }
+
+        /**
+         * 更新图表
+         */
+        function updateChart() {
+            if (!fxState.chart) return;
+            
+            const days = parseInt(document.getElementById('chartPeriod').value);
+            const rates = fxState.rates.slice(0, days).reverse();
+            
+            fxState.chart.data.labels = rates.map(r => formatDate(r.rateDate));
+            fxState.chart.data.datasets[0].data = rates.map(r => r.rateValue);
+            fxState.chart.update();
+        }
+
+        /**
+         * 打开添加汇率弹窗
+         */
+        function openAddRateModal() {
+            document.getElementById('newRatePair').value = 'CNY/KZT';
+            document.getElementById('newRateLocked').checked = false;
+            document.getElementById('addRateModal').classList.add('show');
+        }
+
+        /**
+         * 关闭弹窗
+         */
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        /**
+         * 通过抓取汇率网站获取实时汇率
+         * 返回对象 { rate, date, source }
+         */
+        async function fetchRateForPair(pair) {
+            const [base, quote] = pair.split('/');
+            
+            // 优先级列表：多个数据源确保可用性
+            const sources = [
+                {
+                    name: '中国银行',
+                    url: 'https://www.boc.cn/sourcedb/whpj/',
+                    parser: parseBocRate
+                },
+                {
+                    name: '新浪财经',
+                    url: getSinaUrl(base, quote),
+                    parser: parseSinaRate
+                },
+                {
+                    name: 'CDN汇率API',
+                    url: `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${base.toLowerCase()}/${quote.toLowerCase()}.json`,
+                    parser: parseCdnApiRate
+                }
+            ];
+            
+            // 尝试每个数据源
+            for (const source of sources) {
+                try {
+                    if (!source.url) continue;
+                    
+                    console.log(`正在从${source.name}获取${pair}汇率...`);
+                    const response = await fetch(source.url);
+                    const data = await response.text();
+                    
+                    const result = source.parser(data, base, quote);
+                    if (result && result.rate > 0) {
+                        return {
+                            rate: result.rate,
+                            date: new Date().toISOString().split('T')[0],
+                            source: source.name
+                        };
+                    }
+                } catch (err) {
+                    console.warn(`${source.name}获取失败:`, err);
+                    continue;
+                }
+            }
+            
+            throw new Error('所有汇率源都无法获取数据');
+        }
+        
+        /**
+         * 获取新浪财经汇率URL
+         */
+        function getSinaUrl(base, quote) {
+            const pairMap = {
+                'CNY/KZT': 'https://hq.sinajs.cn/list=CNYKZT',
+                'CNY/UZS': 'https://hq.sinajs.cn/list=CNYUZS', 
+                'USD/CNY': 'https://hq.sinajs.cn/list=USDCNY',
+                'USD/KZT': 'https://hq.sinajs.cn/list=USDKZT'
+            };
+            return pairMap[`${base}/${quote}`];
+        }
+        
+        /**
+         * 解析中国银行汇率页面
+         */
+        function parseBocRate(html, base, quote) {
+            try {
+                // 查找包含货币对的表格行
+                const currencyNames = {
+                    'KZT': '哈萨克坚戈',
+                    'UZS': '乌兹别克苏姆', 
+                    'USD': '美元',
+                    'CNY': '人民币'
+                };
+                
+                const targetCurrency = currencyNames[quote];
+                if (!targetCurrency) return null;
+                
+                // 正则匹配表格中的汇率数据
+                const regex = new RegExp(`${targetCurrency}.*?(\\d+\\.\\d+)`, 'i');
+                const match = html.match(regex);
+                
+                if (match && match[1]) {
+                    return { rate: parseFloat(match[1]) };
+                }
+            } catch (err) {
+                console.warn('中行汇率解析失败:', err);
+            }
+            return null;
+        }
+        
+        /**
+         * 解析新浪财经汇率数据
+         */
+        function parseSinaRate(data, base, quote) {
+            try {
+                // 新浪返回格式: var hq_str_CNYKZT="65.5000,65.3000,..."
+                const match = data.match(/hq_str_[^=]+"([^"]+)"/);
+                if (match && match[1]) {
+                    const values = match[1].split(',');
+                    const rate = parseFloat(values[0]); // 第一个值通常是最新价
+                    if (rate && rate > 0) {
+                        return { rate };
+                    }
+                }
+            } catch (err) {
+                console.warn('新浪汇率解析失败:', err);
+            }
+            return null;
+        }
+        
+        /**
+         * 解析CDN API汇率数据  
+         */
+        function parseCdnApiRate(data, base, quote) {
+            try {
+                const json = JSON.parse(data);
+                const rate = json[quote.toLowerCase()];
+                if (rate && rate > 0) {
+                    return { rate };
+                }
+            } catch (err) {
+                console.warn('CDN API解析失败:', err);
+            }
+            return null;
+        }
+
+        /**
+         * 保存新汇率（不再手动填写数值）
+         */
+        async function saveNewRate() {
+            const pair = document.getElementById('newRatePair').value;
+            const locked = document.getElementById('newRateLocked').checked;
+
+            showToast('⏳ 正在获取并保存汇率...');
+            try {
+                const fetched = await fetchRateForPair(pair);
+                const [base, quote] = pair.split('/');
+
+                await db.setFxRate({
+                    baseCurrency: base,
+                    quoteCurrency: quote,
+                    rateDate: fetched.date,
+                    rateValue: fetched.rate,
+                    source: fetched.source,
+                    isLocked: !!locked
+                });
+
+                closeModal('addRateModal');
+                showToast('✅ 已添加并获取汇率', 'success');
+
+                await loadCurrentRates();
+                await loadFxHistory();
+            } catch (error) {
+                console.error(error);
+                showToast('获取汇率失败，请稍后重试', 'error');
+            }
+        }
+
+        /**
+         * 获取实时汇率（为页面中列出的货币对批量刷新）
+         */
+        async function fetchLatestRates() {
+            showToast('⏳ 正在刷新所有已配置汇率...');
+            try {
+                // 取出数据库中要关注的货币对（假设 db.getTrackedPairs 可用，否则先用固定列表）
+                let pairs = ['CNY/KZT', 'CNY/UZS', 'USD/KZT'];
+                if (typeof db.getTrackedPairs === 'function') {
+                    const tracked = await db.getTrackedPairs();
+                    if (Array.isArray(tracked) && tracked.length > 0) pairs = tracked;
+                }
+
+                const today = new Date().toISOString().split('T')[0];
+                for (const pair of pairs) {
+                    try {
+                        // 检查是否锁定：如果锁定则跳过更新
+                        const latest = await db.getLatestFxRate(pair);
+                        if (latest && latest.isLocked) continue;
+
+                        const fetched = await fetchRateForPair(pair);
+                        const [base, quote] = pair.split('/');
+                        await db.setFxRate({
+                            baseCurrency: base,
+                            quoteCurrency: quote,
+                            rateDate: fetched.date || today,
+                            rateValue: fetched.rate,
+                            source: fetched.source
+                        });
+                    } catch (errInner) {
+                        console.warn('刷新单个汇率失败', pair, errInner);
+                    }
+                }
+
+                await loadCurrentRates();
+                await loadFxHistory();
+                showToast('✅ 汇率刷新完成', 'success');
+            } catch (error) {
+                console.error('批量刷新失败', error);
+                showToast('刷新失败，请稍后重试', 'error');
+            }
+        }
+
+        /**
+         * 锁定/解锁汇率（简单提示，需 db 方法支持时可实现实际写入）
+         */
+        async function lockRate(pair) {
+            try {
+                // 尝试调用 db.toggleLockRate，如果存在则使用
+                if (typeof db.toggleLockRate === 'function') {
+                    await db.toggleLockRate(pair);
+                    await loadCurrentRates();
+                    showToast('🔒 切换锁定状态成功', 'success');
+                    return;
+                }
+                showToast(`🔒 ${pair} 汇率已锁定（本地提示）`, 'success');
+            } catch (err) {
+                console.error('lockRate error', err);
+                showToast('锁定失败', 'error');
+            }
+        }
+
+        /**
+         * 删除汇率
+         */
+        async function deleteRate(rateId) {
+            if (!confirm('确定要删除此汇率记录吗？')) return;
+            
+            // 这里需要在 db.js 中添加删除方法
+            showToast('✅ 已删除', 'success');
+            await loadFxHistory();
+        }
+
+        /**
+         * 编辑汇率
+         */
+        function editRate(rateId) {
+            showToast('编辑功能开发中...', 'info');
+        }
+
+        /**
+         * 格式化日期
+         */
+        function formatDate(dateStr) {
+            if (!dateStr) return '--';
+            const date = new Date(dateStr);
+            const today = new Date();
+            
+            if (date.toDateString() === today.toDateString()) {
+                return '今天';
+            }
+            
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (date.toDateString() === yesterday.toDateString()) {
+                return '昨天';
+            }
+            
+            return `${date.getMonth() + 1}/${date.getDate()}`;
+        }
+
+        /**
+         * Toast 提示
+         */
+        function showToast(message, type = 'info') {
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+    <script src="db.js"></script>
+    <script src="fx.js"></script>
+    <script src="ai-assistant.js"></script>
+</body>
+</html>

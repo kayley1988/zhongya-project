@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多语种翻译 - 金哲工程机械</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h1 { color: #333; }
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        .translate-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .input-box, .output-box {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .input-box textarea, .output-box textarea {
+            width: 100%;
+            height: 200px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .input-box textarea:focus, .output-box textarea:focus { outline: none; }
+        .lang-select {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .lang-select select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .btn-translate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 多语种翻译</h1>
+            <a href="./main.html" class="back-btn">← 返回主页</a>
+        </div>
+        
+        <div class="lang-select">
+            <select>
+                <option>中文</option>
+                <option>English</option>
+                <option>Русский</option>
+                <option>Қазақша</option>
+                <option>O'zbek</option>
+            </select>
+            <span style="line-height: 35px;">→</span>
+            <select>
+                <option>Русский</option>
+                <option>English</option>
+                <option>中文</option>
+                <option>Қазақша</option>
+                <option>O'zbek</option>
+            </select>
+        </div>
+        
+        <div class="translate-box">
+            <div class="input-box">
+                <textarea placeholder="请输入要翻译的文本..."></textarea>
+            </div>
+            <div class="output-box">
+                <textarea placeholder="翻译结果将显示在这里..." readonly></textarea>
+            </div>
+        </div>
+        
+        <button class="btn-translate" onclick="alert('翻译功能开发中...')">🔄 开始翻译</button>
+    </div>
+</body>
+</html>

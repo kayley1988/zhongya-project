@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通用功能区 - 金哲工程机械</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .nav-breadcrumb {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-breadcrumb a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .nav-breadcrumb span {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .card-icon {
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .card-desc {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .card-features {
+            margin-bottom: 15px;
+        }
+
+        .feature-item {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 5px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .back-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-breadcrumb">
+            <a href="./main.html">🏠 主页</a>
+            <span>›</span>
+            <span style="color: white; font-weight: bold;">🛠️ 通用功能区</span>
+        </div>
+
+        <div class="header">
+            <h1>🛠️ 通用功能区</h1>
+            <p>General Function Hub - 核心业务管理模块</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">功能模块</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">系统覆盖率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">在线服务</div>
+            </div>
+        </div>
+
+        <div class="cards">
+            <a href="./project.html" class="card">
+                <div class="card-icon">📋</div>
+                <div class="card-title">招标采购管理</div>
+                <div class="card-desc">项目招投标、采购流程管理、供应商评估</div>
+                <div class="card-features">
+                    <div class="feature-item">项目招投标全流程管理</div>
+                    <div class="feature-item">供应商资质评估与对比</div>
+                    <div class="feature-item">采购订单追踪与审批</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">招投标</span>
+                    <span class="tag">供应商</span>
+                    <span class="tag">采购流程</span>
+                </div>
+            </a>
+
+            <a href="./finance.html" class="card">
+                <div class="card-icon">💰</div>
+                <div class="card-title">财务管理</div>
+                <div class="card-desc">跨境支付、汇率管理、财务报表、成本分析</div>
+                <div class="card-features">
+                    <div class="feature-item">多币种跨境支付管理</div>
+                    <div class="feature-item">实时汇率监控与预警</div>
+                    <div class="feature-item">财务报表自动生成</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">财务报表</span>
+                    <span class="tag">汇率</span>
+                    <span class="tag">跨境支付</span>
+                </div>
+            </a>
+
+            <a href="./dashboard.html" class="card">
+                <div class="card-icon">📊</div>
+                <div class="card-title">数据看板</div>
+                <div class="card-desc">销售数据、市场趋势、库存分析、业绩仪表盘</div>
+                <div class="card-features">
+                    <div class="feature-item">实时销售数据可视化</div>
+                    <div class="feature-item">市场趋势智能分析</div>
+                    <div class="feature-item">多维度业绩指标监控</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">可视化</span>
+                    <span class="tag">实时数据</span>
+                    <span class="tag">BI分析</span>
+                </div>
+            </a>
+
+            <a href="./list.html" class="card">
+                <div class="card-icon">📦</div>
+                <div class="card-title">设备清单管理</div>
+                <div class="card-desc">库存管理、设备档案、维修记录、调拨追踪</div>
+                <div class="card-features">
+                    <div class="feature-item">设备全生命周期管理</div>
+                    <div class="feature-item">智能库存预警系统</div>
+                    <div class="feature-item">维修保养记录追踪</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">库存</span>
+                    <span class="tag">档案</span>
+                    <span class="tag">维修记录</span>
+                </div>
+            </a>
+
+            <a href="./pricing.html" class="card">
+                <div class="card-icon">💵</div>
+                <div class="card-title">智能定价系统</div>
+                <div class="card-desc">市场价格分析、智能定价建议、竞争对手追踪</div>
+                <div class="card-features">
+                    <div class="feature-item">AI驱动的价格建议引擎</div>
+                    <div class="feature-item">竞争对手价格实时监控</div>
+                    <div class="feature-item">历史价格趋势分析</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">AI定价</span>
+                    <span class="tag">价格分析</span>
+                    <span class="tag">市场监控</span>
+                </div>
+            </a>
+
+            <a href="./inspection.html" class="card">
+                <div class="card-icon">🔍</div>
+                <div class="card-title">智能验机</div>
+                <div class="card-desc">设备验机流程、检测清单、报告生成与质量评估</div>
+                <div class="card-features">
+                    <div class="feature-item">标准化验机流程管理</div>
+                    <div class="feature-item">智能质量评估系统</div>
+                    <div class="feature-item">验机报告自动生成</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">验机报告</span>
+                    <span class="tag">质量检测</span>
+                    <span class="tag">标准化</span>
+                </div>
+            </a>
+
+            <a href="./multi-crawler-demo.html" class="card">
+                <div class="card-icon">🕷️</div>
+                <div class="card-title">多网站爬虫工具</div>
+                <div class="card-desc">一键爬取铁甲网、工程机械在线等多个网站的价格数据</div>
+                <div class="card-features">
+                    <div class="feature-item">多平台数据同步爬取</div>
+                    <div class="feature-item">智能数据清洗与去重</div>
+                    <div class="feature-item">Excel一键导出功能</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">数据爬取</span>
+                    <span class="tag">Excel导出</span>
+                    <span class="tag">自动化</span>
+                </div>
+            </a>
+
+            <a href="./settings.html" class="card">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">系统设置</div>
+                <div class="card-desc">用户管理、权限配置、系统参数、数据备份</div>
+                <div class="card-features">
+                    <div class="feature-item">多级用户权限管理</div>
+                    <div class="feature-item">系统参数灵活配置</div>
+                    <div class="feature-item">自动数据备份与恢复</div>
+                </div>
+                <div class="card-tags">
+                    <span class="tag">设置</span>
+                    <span class="tag">权限管理</span>
+                    <span class="tag">备份</span>
+                </div>
+            </a>
+        </div>
+
+        <a href="./main.html" class="back-btn">← 返回主页</a>
+    </div>
+</body>
+</html>
